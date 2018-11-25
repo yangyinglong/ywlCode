@@ -4,4 +4,5 @@ QA 中用来提问题和回答问题，遇到的问题记录在这里，解决�
 void printStu(struct Student * stu);
 struct Student init(char * idNumber,char * idNumber, int sex);
 void inputCharArr(char charArr[], int length);
-？这三行代码分别有没有别的改写方法
+Q: 这三行代码分别有没有别的改写方法?
+A: strct Student init()  ==>>  void init(struct Student * stu, char * idNumber, char * name, int sex);
