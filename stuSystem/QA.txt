@@ -1,0 +1,7 @@
+QA 中用来提问题和回答问题，遇到的问题记录在这里，解决方法也记录再这里
+
+
+void printStu(struct Student * stu);
+struct Student init(char * idNumber,char * idNumber, int sex);
+void inputCharArr(char charArr[], int length);
+？这三行代码分别有没有别的改写方法
