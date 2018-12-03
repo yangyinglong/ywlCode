@@ -6,3 +6,8 @@ struct Student init(char * idNumber,char * idNumber, int sex);
 void inputCharArr(char charArr[], int length);
 Q: 这三行代码分别有没有别的改写方法?
 A: strct Student init()  ==>>  void init(struct Student * stu, char * idNumber, char * name, int sex);
+
+20181203 代码中的问题:
+1. 命名上的错误 printall 是两个单词，第二个单词首字母应该大写 printAll
+2. 函数定义中对数组的使用错误，比如：void add(struct Student stu[100])，应该写成 void add(struct Student stu[]) 或者 void add(struct Student *stu)
+3. switch-case 语法使用错误，每个 case 后面应该有 break；并且最后面还有一个 default 语句
