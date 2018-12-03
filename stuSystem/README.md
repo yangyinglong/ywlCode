@@ -148,3 +148,51 @@ Please enter an order: q
 students save success!
 Bye
 ```
+
+代码框架
+```
+struct Student
+{
+	char idNumber[6];
+	char name[10];
+	int sex;	
+	int status;		//学生状态，1：有效，0：无效
+};
+
+int main()
+{
+	// 学生数组，在代码运行中，主要对这个数组进行操作
+	struct Student students[MAX_STU_NUM];
+	// 保存查询结果信息
+	struct Student resultStus[MAX_STU_NUM];
+
+	// 第一步：从文件中读取学生信息到学生数组 students 中，这里是一个函数，函数返回的是学生的个数
+
+	while(1 == quiet)
+	{
+		// 输入命令到 order 中
+		switch(order)
+		{
+			case 'a':
+				// 增加一条学生信息到学生数组中
+				break;
+			case 'p':
+				// 打印学生信息
+				break;
+			case 'd':
+				// 删除一个学生，删除学生就是更改状态 status = 0
+				break;
+			case 'f':
+				// 查询学生信息，目前只按照性别查询，查询学生信息，返回查询到符合条件的学生个数，把结果写到另一个学生数组 resultStus 中。
+				break;
+			case 'q':
+				quiet = 0;
+				// 把学生数组 students 中的信息写入到文件中，下次启动程序的时候继续读这个文件
+				break;
+			default:
+				// 命令输入错误时执行
+				break;
+		}
+	}
+}
+```
