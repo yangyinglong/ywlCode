@@ -11,3 +11,15 @@ A: strct Student init()  ==>>  void init(struct Student * stu, char * idNumber, 
 1. 命名上的错误 printall 是两个单词，第二个单词首字母应该大写 printAll
 2. 函数定义中对数组的使用错误，比如：void add(struct Student stu[100])，应该写成 void add(struct Student stu[]) 或者 void add(struct Student *stu)
 3. switch-case 语法使用错误，每个 case 后面应该有 break；并且最后面还有一个 default 语句
+
+
+20181205
+Q: 如何定义一个函数？函数由哪几部分组成？各个部分的意义是什么？举例子说明（用 stuSustem.c 中的函数）
+
+Q: 函数的参数为一个数组的时候，需要注意什么？怎么定义？具体使用的时候，传入的是什么值？举例子说明。
+
+Q: 数组的首地址和数组名是什么关系？
+
+Q: 宏怎么定义？怎么使用？
+
+Q: 什么是作用域？变量超出作用域之后还能使用吗？全局变量的作用域是什么？ stuSystem.c 中全局变量有哪些？
