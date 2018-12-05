@@ -20,9 +20,9 @@ FILE * fpStu;    //定义一个指向文件的指针fpStu
 int readFile(struct Student students[]);       //读取文件
 void writeFile(struct Student students[], int stuNum);   //写入文件（将文件中修改过的内容写入文件）
 int addStu(struct Student students[], int stuNum, struct Student stu);        //增加一条学生记录
-void deleteStu(struct Student students[], char idNumber[], int stuNum);       //删除一条学生记录
+void deleteStu(struct Student students[], char idNumber[], int stuNum);       //删除一条学生记录(使该学生的状态stastus==0)
 int searchStu(struct Student students[], int stuNum, struct Student resultStus[], int sex);    //根据性别查询符合条件的所有学生的信息并打印出来
-void printAll(struct Student students[], int stuNum);    //打印所有学生信息
+void printAll(struct Student students[], int stuNum);    //打印所有学生信息(包括状态stastus==0的学生)
 
 
 
@@ -30,44 +30,43 @@ int main()
 {
 	struct Student students[MAX_STU_NUM];
 	struct Student resultStus[MAX_STU_NUM];
-	char order;
-	int sign = 1;
-	//定义学生数量
-	int stuNum = 0;
-	char idNumber[6];
-	int resultNum;
-	stuNum = readFile(students);
+	char order;       //定义一个字符型变量order来接收要执行的命令
+	int sign = 1;     //作为循环继续或退出的标志
+	int stuNum = 0;   //定义学生数量，存放学生总数
+	char idNumber[6];  
+	int resultNum;    //定义学生数量，存放符合条件的学生数量
+	stuNum = readFile(students); 
 
 	struct Student stu = {"00003", "Jhon", 1, 1};
-	strcpy(idNumber, "00001");
+	strcpy(idNumber, "00002");
 
 	while(sign == 1) 
 	{
-		printf("a-addStu\td-delete\tf-search\tp-printAll\tq-exit\n");
+		printf("a-addStu\td-delete\tf-searchStu\tp-printAll\tq-exit\n");
 		printf("please enter an order:");
 		scanf("%c", &order);
-		getchar();
+		getchar();    //用来在输入命令后清除缓冲
 		switch(order)
 		{
-			case 'a':
-				stuNum = addStu(students, stuNum, stu);
-				break;        //增加一条记录				
-			case 'd':
-				deleteStu(students, idNumber, stuNum);
-				break;        //根据学号删除一条记录
-			case 'f':
+			case 'a':       //增加一条记录
+				stuNum = addStu(students, stuNum, stu);   	
+				break;        			
+			case 'd':       //根据学号删除一条记录(使该学生的状态stastu==0)
+				deleteStu(students, idNumber, stuNum);    
+				break;        
+			case 'f':       //根据性别查询符合条件的所有学生的信息并打印出来
 				resultNum = searchStu(students, stuNum, resultStus, 0);
 				printAll(resultStus, resultNum);
-				break;        //根据性别查询符合条件的所有学生的信息并打印出来
-			case 'p':
+				break;        
+			case 'p':       //打印所有学生信息
 				printAll(students, stuNum);
-				break;        //打印所有学生信息
-			case 'q':
-				writeFile(students, stuNum);                      //退出系统
+				break;        
+			case 'q':       //保存修改后的学生信息并退出系统
+				writeFile(students, stuNum);                      
 				printf("Students save success!\nBye\n");
 				sign = 0;
 				break;       
-			default:
+			default:        //如果命令输入错误就进行提示
 				printf("please choose the true order!\n");
 				break;
 		}
@@ -179,6 +178,7 @@ int addStu(struct Student students[], int stuNum, struct Student stu)
 void deleteStu(struct Student students[], char idNumber[], int stuNum)
 {
 	struct Student * pStu;
+	int flag = 0;
 	for(int i = 0; i < stuNum; ++i)
 	{
 		pStu = &students[i];
@@ -186,13 +186,14 @@ void deleteStu(struct Student students[], char idNumber[], int stuNum)
 		{
 			pStu->status = 0;
 			printf("delete success\n");
+			flag = 1;
 			return;
 		}
-		else
-		{
-			printf("no this student\n");
-			return;
-		}
+	}
+	if(flag == 0)
+	{
+		printf("no this student\n");
+		return;
 	}
 	return;
 }
