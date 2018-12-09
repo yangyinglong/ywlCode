@@ -1,3 +1,4 @@
 ﻿add vm centos ssh_key
 add yyl windowns ssh_key
 修改仓库名称为 yylCode
+旧电脑增加 ssh
