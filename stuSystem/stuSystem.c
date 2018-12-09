@@ -1,4 +1,5 @@
 // 学生管理系统
+
 #include<stdio.h>    
 #include<string.h>
 
@@ -10,12 +11,12 @@ struct Student
 	char idNumber[6];
 	char name[10];
 	int sex;
-	int status;	
+	int status;
 };
 
 FILE * fpStu;    //定义一个指向文件的指针fpStu
 
-//对所使用到的函数进行声明
+//函数声明
 //void printHead();
 int readFile(struct Student students[]);       //读取文件
 void writeFile(struct Student students[], int stuNum);   //写入文件（将文件中修改过的内容写入文件）
@@ -23,6 +24,8 @@ int addStu(struct Student students[], int stuNum, struct Student stu);        //
 void deleteStu(struct Student students[], char idNumber[], int stuNum);       //删除一条学生记录(使该学生的状态stastus==0)
 int searchStu(struct Student students[], int stuNum, struct Student resultStus[], int sex);    //根据性别查询符合条件的所有学生的信息并打印出来
 void printAll(struct Student students[], int stuNum);    //打印所有学生信息(包括状态stastus==0的学生)
+void inputCharArr(char charArr[], int len);
+struct Student initStu(char idNumber[], char name[], int sex);
 
 
 
@@ -33,29 +36,41 @@ int main()
 	char order;       //定义一个字符型变量order来接收要执行的命令
 	int sign = 1;     //作为循环继续或退出的标志
 	int stuNum = 0;   //定义学生数量，存放学生总数
-	char idNumber[6];  
+	char idNumber[6];
+	char name[10];
+	int sex;  
 	int resultNum;    //定义学生数量，存放符合条件的学生数量
-	stuNum = readFile(students); 
+	struct Student stu;
 
-	struct Student stu = {"00003", "Jhon", 1, 1};
-	strcpy(idNumber, "00002");
-
+	stuNum = readFile(students); 	
+	printf("a-addStu\td-delete\tf-searchStu\tp-printAll\tq-exit\n");
 	while(sign == 1) 
 	{
-		printf("a-addStu\td-delete\tf-searchStu\tp-printAll\tq-exit\n");
 		printf("please enter an order:");
 		scanf("%c", &order);
 		getchar();    //用来在输入命令后清除缓冲
 		switch(order)
 		{
 			case 'a':       //增加一条记录
+				printf("please enter the idNumber: ");
+				inputCharArr(idNumber, 6);
+				printf("please enter the name: ");
+				inputCharArr(name, 10);
+				printf("please enter the sex: ");
+				scanf("%d", &sex);
+				while(getchar() != '\n');
+				stu = initStu(idNumber, name, sex);
 				stuNum = addStu(students, stuNum, stu);   	
 				break;        			
 			case 'd':       //根据学号删除一条记录(使该学生的状态stastu==0)
+				inputCharArr(idNumber, 6);
 				deleteStu(students, idNumber, stuNum);    
 				break;        
 			case 'f':       //根据性别查询符合条件的所有学生的信息并打印出来
-				resultNum = searchStu(students, stuNum, resultStus, 0);
+				printf("please input a sex(0 or 1) endwith enter: ");
+				scanf("%d", &sex);
+				while(getchar() != '\n');
+				resultNum = searchStu(students, stuNum, resultStus, sex);
 				printAll(resultStus, resultNum);
 				break;        
 			case 'p':       //打印所有学生信息
@@ -68,6 +83,7 @@ int main()
 				break;       
 			default:        //如果命令输入错误就进行提示
 				printf("please choose the true order!\n");
+				printf("a-addStu\td-delete\tf-searchStu\tp-printAll\tq-exit\n");
 				break;
 		}
 	} 
@@ -75,8 +91,7 @@ int main()
 }
 
 
-// 实现相应的函数
-
+// 定义相应的函数
 
 /*
   在终端打印出
@@ -85,28 +100,35 @@ int main()
  */
 void printHead()
 {
-	for (int i = 0; i < 33; ++i)
+	for (int i = 0; i < 25; ++i)
 	{
 		printf("-");
 	}
 	printf("\n");
-	printf("|Idnumber\t|name\t|sex\t|\n");
+	printf("|IdNum\t|Name\t|Sex\t|\n");
 	
 }
 
-
-
-void printAll(struct Student students[], int stuNum)
+void printAll(struct Student students[], int stuNum)    //void类型的函数printAll中传入了struct Student类型的students和int类型的stuNum这两个参数
 {
-	struct Student * pStu;
+	printHead();
+	struct Student * pStu;       //定义一个struct Student类型的指针PStu
+	if (stuNum == 0)
+	{
+		for (int j = 0; j < 25; ++j)
+		{
+			printf("-");			
+		}
+		printf("\n|\tno\tone\t|\n");
+	}
 	for (int i = 0; i < stuNum; ++i)
 	{
-		pStu = &students[i];
+		pStu = &students[i];        
 		if (pStu->status == 0)
 		{
 			continue;	 
 		}
-		for (int j = 0; j < 33; ++j)
+		for (int j = 0; j < 25; ++j)
 		{
 			printf("-");			
 		}
@@ -118,7 +140,7 @@ void printAll(struct Student students[], int stuNum)
 		printf("%d\t", pStu->sex);
 		printf("|\n");
 	}
-	for (int j = 0; j < 33; ++j)
+	for (int j = 0; j < 25; ++j)
 	{
 		printf("-");			
 	}
@@ -214,3 +236,29 @@ int searchStu(struct Student students[], int stuNum, struct Student resultStus[]
 
 	return index;
 }
+
+void inputCharArr(char charArr[], int len)
+{
+	char c;
+	int index = 0;
+	while((c = getchar()) != '\n');
+	printf("please input:");
+	while((c = getchar()) != '\n' && index < len - 1)
+	{
+		charArr[index] = c;
+		index ++;
+	}
+	charArr[index] = '\0';
+	while((c = getchar()) != '\n');
+}
+
+struct Student initStu(char idNumber[], char name[], int sex)
+{
+	struct Student stu;
+	strcpy(stu.idNumber, idNumber);
+	strcpy(stu.name, name);
+	stu.sex = sex;
+	stu.status = 1;
+	return stu;
+};
+
