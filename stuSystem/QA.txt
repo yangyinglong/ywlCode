@@ -7,19 +7,72 @@ void inputCharArr(char charArr[], int length);
 Q: 这三行代码分别有没有别的改写方法?
 A: strct Student init()  ==>>  void init(struct Student * stu, char * idNumber, char * name, int sex);
 
+
+
+
 20181203 代码中的问题:
 1. 命名上的错误 printall 是两个单词，第二个单词首字母应该大写 printAll
 2. 函数定义中对数组的使用错误，比如：void add(struct Student stu[100])，应该写成 void add(struct Student stu[]) 或者 void add(struct Student *stu)
 3. switch-case 语法使用错误，每个 case 后面应该有 break；并且最后面还有一个 default 语句
 
 
+
+
 20181205
 Q: 如何定义一个函数？函数由哪几部分组成？各个部分的意义是什么？举例子说明（用 stuSustem.c 中的函数）
+A: 定义函数：
+int searchStu(struct Student students[], int stuNum, struct Student resultStus[], int sex)   
+{
+	struct Student * pStu;
+	int index = 0;
+	for(int i = 0; i < stuNum; ++i)
+	{
+		pStu = &students[i];
+		if(pStu->sex == sex && pStu->status == 1)
+		{
+			resultStus[index] = students[i];  
+			index ++;            
+		}
+	}
+
+	return index;
+}
+   组成部分：函数返回类型 int、 函数名称 searchStu、 引入参数  students[], stuNum, resultStus[], sex 
+   各部分意义：函数返回类型：指定函数返回的类型
+              函数名称：在调用函数时用到函数名称
+              引入参数：
 
 Q: 函数的参数为一个数组的时候，需要注意什么？怎么定义？具体使用的时候，传入的是什么值？举例子说明。
+A: 在传入数组的同时也要传入数组的有效长度
+   定义：struct Student students[], 有效长度：int stuNum
+        struct Student * pStudent, 有效长度：int stuNum
+        传入的是数组的地址
+
 
 Q: 数组的首地址和数组名是什么关系？
+A: 数组名就是数组的首地址
 
 Q: 宏怎么定义？怎么使用？
+A: 宏定义：#define 标识符 字符串，其中的标识符就是所谓的符号常量，也称为“宏名”
+   使用方法：1、标识符别名：如 #define MAX_STU_NUM 20
+                            struct Student students[MAX_STU_NUM];  其中 MAX_STU_NUM = 20
+            2、作为宏函数：宏名之后带括号的宏被认为是宏函数，用法和普通函数一样
+               如 #define min(X, Y)  ((X) < (Y) ? (X) : (Y))
+                         宏名 宏函数
+  特殊用法： 3、字符串化：在宏体中，如果宏参数前加个#，那么在宏体扩展的时候，宏参数会被扩展成字符串的形式。如：
+						如   #define WARN_IF(EXP) \
+						     do { if (EXP) \
+						             fprintf (stderr, "Warning: " #EXP "\n"); } \
+						     while (0)
+						WARN_IF (x == 0);会被扩展成：
+
+						do { if (x == 0)
+						    fprintf (stderr, "Warning: " "x == 0" "\n"); }
+						while (0);
 
 Q: 什么是作用域？变量超出作用域之后还能使用吗？全局变量的作用域是什么？ stuSystem.c 中全局变量有哪些？
+A: 作用域：是指变量在函数中可以作用的有效范围
+   不能
+   全局变量的作用域是：整个程序内部
+   stuSystem.c 中全局变量： FILE * fpStu;  
+                         
