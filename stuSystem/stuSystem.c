@@ -26,6 +26,7 @@ int searchStu(struct Student students[], int stuNum, struct Student resultStus[]
 void printAll(struct Student students[], int stuNum);    //打印所有学生信息(包括状态stastus==0的学生)
 void inputCharArr(char charArr[], int len);
 struct Student initStu(char idNumber[], char name[], int sex);
+int searchStuById(struct Student students[], int stuNum, struct Student resultStus[], char id[]);
 
 
 
@@ -41,6 +42,7 @@ int main()
 	int sex;  
 	int resultNum;    //定义学生数量，存放符合条件的学生数量
 	struct Student stu;
+	char id[6];
 
 	stuNum = readFile(students); 	
 	printf("a-addStu\td-delete\tf-searchStu\tp-printAll\tq-exit\n");
@@ -72,7 +74,15 @@ int main()
 				while(getchar() != '\n');
 				resultNum = searchStu(students, stuNum, resultStus, sex);
 				printAll(resultStus, resultNum);
-				break;        
+				break;  
+			case 's':
+				printf("please input an idNumber endwith enter: ");
+				inputCharArr(id, 6);
+				while(getchar() != '\n');
+				resultNum = searchStuById(students, stuNum, resultStus, id);
+				printAll(resultStus, resultNum);
+				break;  
+
 			case 'p':       //打印所有学生信息
 				printAll(students, stuNum);
 				break;        
@@ -85,6 +95,7 @@ int main()
 				printf("please choose the true order!\n");
 				printf("a-addStu\td-delete\tf-searchStu\tp-printAll\tq-exit\n");
 				break;
+
 		}
 	} 
 	return 0;  
@@ -262,3 +273,19 @@ struct Student initStu(char idNumber[], char name[], int sex)
 	return stu;
 };
 
+int searchStuById(struct Student students[], int stuNum, struct Student resultStus[], char id[])
+{
+	struct Student * pStu;
+	int index = 0;
+	for(int i = 0; i < stuNum; ++i)
+	{
+		pStu = &students[i];
+		if(strcmp(id, pStu->idNumber) == 0 && pStu->status == 1)
+		{
+			resultStus[index] = students[i];  
+			index ++;            
+		}
+	}
+
+	return index;
+}
