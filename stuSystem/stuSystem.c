@@ -26,10 +26,11 @@ int addStu(struct Student students[], int stuNum, struct Student stu);
 void deleteStu(struct Student students[], char idNumber[], int stuNum);       //删除一条学生记录(使该学生的状态stastus==0)
 int searchStu(struct Student students[], int stuNum, struct Student resultStus[], int sex);    //根据性别查询符合条件的所有学生的信息并打印出来
 void printAll(struct Student students[], int stuNum);    //打印所有学生信息(包括状态stastus==0的学生)
+void printOne(struct Student * pRStu, int resultNum);
 void inputCharArr(char charArr[], int len);
 struct Student initStu(char idNumber[], char name[], int sex);
 //int searchStuById(struct Student students[], int stuNum, struct Student resultStus[], char id[]);
-int searchStuById(struct Student students[], int stuNum, char idNumber[], struct Student * stuId);
+int searchStuById(struct Student students[], int stuNum, char idNumber[], struct Student * pRStu);
 
 
 int main()
@@ -44,10 +45,6 @@ int main()
 	int sex;  
 	int resultNum;    //定义学生数量，存放符合条件的学生数量
 	struct Student stu;
-
-	struct Student * stuId;
-	stuId = &stu;
-	int result;
 
 	stuNum = readFile(students); 	
 	printf("a-addStu\td-delete\tf-searchStu\tp-printAll\tq-exit\n");
@@ -81,27 +78,20 @@ int main()
 				resultNum = searchStu(students, stuNum, resultStus, sex);
 				printAll(resultStus, resultNum);
 				break;  
-		/*	case 's':
-				printf("please input an idNumber endwith enter: ");
-				inputCharArr(idNumber, 6);
-				while(getchar() != '\n');
-				resultNum = searchStuById(students, stuNum, resultStus, idNumber);
-				printAll(resultStus, resultNum);
-				break; 
-				*/ 
 			case 's':
 				printf("please input an idNumber endwith enter: ");
 				inputCharArr(idNumber, 6);
 				while(getchar() != '\n');
-				result = searchStuById(students, stuNum, idNumber, stuId);
-				if(result == 1)
-				{
-					printf("%s\t%s\t%d\n", stuId->idNumber, stuId->name, stuId->sex);
-				}
-				else
-				{
-					printf("No this student!\n");
-				}
+				resultNum = searchStuById(students, stuNum, idNumber, &stu);
+				printOne(&stu, resultNum);
+				// if(resultNum == 1)
+				// {
+				// 	printf("%s\t%s\t%d\n", stu.idNumber, stu.name, stu.sex);
+				// }
+				// else
+				// {
+				// 	printf("No this student!\n");
+				// }
 				break; 
 			case 'p':       //打印所有学生信息
 				printAll(students, stuNum);
@@ -137,6 +127,11 @@ void printHead()
 	}
 	printf("\n");
 	printf("|IdNum\t|Name\t|Sex\t|\n");
+	for (int j = 0; j < 25; ++j)
+	{
+		printf("-");			
+	}
+	printf("\n");
 	
 }
 
@@ -159,17 +154,36 @@ void printAll(struct Student students[], int stuNum)    //void类型的函数pri
 		{
 			continue;	 
 		}
-		for (int j = 0; j < 25; ++j)
-		{
-			printf("-");			
-		}
-		printf("\n|");
 		printf("%s\t", pStu->idNumber);
 		printf("|");
 		printf("%s\t", pStu->name);
 		printf("|");
 		printf("%d\t", pStu->sex);
 		printf("|\n");
+	}
+	for (int j = 0; j < 25; ++j)
+	{
+		printf("-");			
+	}
+	printf("\n");
+	return;
+}
+
+void printOne(struct Student * pRStu, int resultNum)
+{
+	printHead();
+	if(resultNum == 1)
+	{
+		printf("%s\t", pRStu->idNumber);
+		printf("|");
+		printf("%s\t", pRStu->name);
+		printf("|");
+		printf("%d\t", pRStu->sex);
+		printf("|\n");
+	}
+	else
+	{
+		printf("| No this student! |\n");
 	}
 	for (int j = 0; j < 25; ++j)
 	{
@@ -335,19 +349,24 @@ int searchStuById(struct Student students[], int stuNum, struct Student resultSt
 }
 */
 
-int searchStuById(struct Student students[], int stuNum, char idNumber[], struct Student * stuId)
+int searchStuById(struct Student students[], int stuNum, char idNumber[], struct Student * pRStu)
 {
 	struct Student * pStu;
 	int index = 0;
 	for(int i = 0; i < stuNum; ++i)
 	{
 		pStu = &students[i];
-		if(strcmp(idNumber, pStu->idNumber) == 0 && pStu->status == 1)
+		if(strcmp(idNumber,  students[i].idNumber) == 0 && students[i].status == 1)
 		{
-			* stuId = students[i];
+		//	*pRStu = students[i];  //将符合条件的值赋给指针PRStu，方法一：直接赋值
+			strcpy(pRStu->idNumber, pStu->idNumber);            //方法二：改进方法
+			strcpy(pRStu->name, pStu->name);
+			pRStu->sex = pStu->sex;
+			pRStu->status = pStu->status;
 			index = 1; 
-			//printf("%d\n", index);   
-		}
+			break;
+			//printf("%d\n", index);
+		}   
 	}
 
 	return index;
