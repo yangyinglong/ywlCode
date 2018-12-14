@@ -46,6 +46,7 @@ int main()
 	struct Student stu;
 
 	struct Student * stuId;
+	stuId = &stu;
 	int result;
 
 	stuNum = readFile(students); 	
@@ -93,9 +94,14 @@ int main()
 				inputCharArr(idNumber, 6);
 				while(getchar() != '\n');
 				result = searchStuById(students, stuNum, idNumber, stuId);
-			//	printf("%d\n", result);
-			//	printAll(stuId, result);
-				printf("%s\n", stuId->name);
+				if(result == 1)
+				{
+					printf("%s\t%s\t%d\n", stuId->idNumber, stuId->name, stuId->sex);
+				}
+				else
+				{
+					printf("No this student!\n");
+				}
 				break; 
 			case 'p':       //打印所有学生信息
 				printAll(students, stuNum);
@@ -340,14 +346,7 @@ int searchStuById(struct Student students[], int stuNum, char idNumber[], struct
 		{
 			* stuId = students[i];
 			index = 1; 
-			printf("%d\n", index);   
-			// printf("\n|");
-			// printf("%s\t\t", stuId->idNumber);
-			// printf("|");
-			// printf("%s\t", stuId->name);
-			// printf("|");
-			// printf("%d\t", stuId->sex);
-			// printf("|\n");  
+			//printf("%d\n", index);   
 		}
 	}
 
