@@ -14,20 +14,22 @@ struct Student
 	int status;
 };
 
+
 FILE * fpStu;    //定义一个指向文件的指针fpStu
 
 //函数声明
 //void printHead();
 int readFile(struct Student students[]);       //读取文件
 void writeFile(struct Student students[], int stuNum);   //写入文件（将文件中修改过的内容写入文件）
-int addStu(struct Student students[], int stuNum, struct Student stu);        //增加一条学生记录
+int addStu(struct Student students[], int stuNum, struct Student stu);
+//int addStu(struct Student students[], int stuNum, struct Student stu, char idNumber[]);        //增加一条学生记录
 void deleteStu(struct Student students[], char idNumber[], int stuNum);       //删除一条学生记录(使该学生的状态stastus==0)
 int searchStu(struct Student students[], int stuNum, struct Student resultStus[], int sex);    //根据性别查询符合条件的所有学生的信息并打印出来
 void printAll(struct Student students[], int stuNum);    //打印所有学生信息(包括状态stastus==0的学生)
 void inputCharArr(char charArr[], int len);
 struct Student initStu(char idNumber[], char name[], int sex);
-int searchStuById(struct Student students[], int stuNum, struct Student resultStus[], char id[]);
-
+//int searchStuById(struct Student students[], int stuNum, struct Student resultStus[], char id[]);
+int searchStuById(struct Student students[], int stuNum, char idNumber[], struct Student * stuId);
 
 
 int main()
@@ -42,7 +44,9 @@ int main()
 	int sex;  
 	int resultNum;    //定义学生数量，存放符合条件的学生数量
 	struct Student stu;
-	char id[6];
+
+	struct Student * stuId;
+	int result;
 
 	stuNum = readFile(students); 	
 	printf("a-addStu\td-delete\tf-searchStu\tp-printAll\tq-exit\n");
@@ -62,7 +66,8 @@ int main()
 				scanf("%d", &sex);
 				while(getchar() != '\n');
 				stu = initStu(idNumber, name, sex);
-				stuNum = addStu(students, stuNum, stu);   	
+				stuNum = addStu(students, stuNum, stu);
+			//	stuNum = addStu(students, stuNum, stu, idNumber);   	
 				break;        			
 			case 'd':       //根据学号删除一条记录(使该学生的状态stastu==0)
 				inputCharArr(idNumber, 6);
@@ -75,14 +80,23 @@ int main()
 				resultNum = searchStu(students, stuNum, resultStus, sex);
 				printAll(resultStus, resultNum);
 				break;  
+		/*	case 's':
+				printf("please input an idNumber endwith enter: ");
+				inputCharArr(idNumber, 6);
+				while(getchar() != '\n');
+				resultNum = searchStuById(students, stuNum, resultStus, idNumber);
+				printAll(resultStus, resultNum);
+				break; 
+				*/ 
 			case 's':
 				printf("please input an idNumber endwith enter: ");
-				inputCharArr(id, 6);
+				inputCharArr(idNumber, 6);
 				while(getchar() != '\n');
-				resultNum = searchStuById(students, stuNum, resultStus, id);
-				printAll(resultStus, resultNum);
-				break;  
-
+				result = searchStuById(students, stuNum, idNumber, stuId);
+			//	printf("%d\n", result);
+			//	printAll(stuId, result);
+				printf("%s\n", stuId->name);
+				break; 
 			case 'p':       //打印所有学生信息
 				printAll(students, stuNum);
 				break;        
@@ -123,7 +137,7 @@ void printHead()
 void printAll(struct Student students[], int stuNum)    //void类型的函数printAll中传入了struct Student类型的students和int类型的stuNum这两个参数
 {
 	printHead();
-	struct Student * pStu;       //定义一个struct Student类型的指针PStu
+	struct Student * pStu;       //定义一个struct Student类型的指针pStu
 	if (stuNum == 0)
 	{
 		for (int j = 0; j < 25; ++j)
@@ -208,6 +222,29 @@ int addStu(struct Student students[], int stuNum, struct Student stu)
 	return stuNum;
 }
 
+/*
+int addStu(struct Student students[], int stuNum, struct Student stu, char idNumber[])
+{
+	struct Student * pStu;
+	if (stuNum + 1 > MAX_STU_NUM - 1)
+	{
+		printf("students had max, stu add fail\n");
+		return stuNum;
+	}
+	if(strcmp(idNumber, pStu->idNumber) == 0 && pStu->status == 1)
+	{
+		students[stuNum] = stu;
+		stuNum ++;
+		printf("student !\n");
+	}
+	else
+	{
+		printf("student add success!\n");
+	}
+	return stuNum;
+}
+*/
+
 void deleteStu(struct Student students[], char idNumber[], int stuNum)
 {
 	struct Student * pStu;
@@ -273,17 +310,44 @@ struct Student initStu(char idNumber[], char name[], int sex)
 	return stu;
 };
 
-int searchStuById(struct Student students[], int stuNum, struct Student resultStus[], char id[])
+/*
+int searchStuById(struct Student students[], int stuNum, struct Student resultStus[], char idNumber[])
 {
 	struct Student * pStu;
 	int index = 0;
 	for(int i = 0; i < stuNum; ++i)
 	{
 		pStu = &students[i];
-		if(strcmp(id, pStu->idNumber) == 0 && pStu->status == 1)
+		if(strcmp(idNumber, pStu->idNumber) == 0 && pStu->status == 1)
 		{
 			resultStus[index] = students[i];  
 			index ++;            
+		}
+	}
+
+	return index;
+}
+*/
+
+int searchStuById(struct Student students[], int stuNum, char idNumber[], struct Student * stuId)
+{
+	struct Student * pStu;
+	int index = 0;
+	for(int i = 0; i < stuNum; ++i)
+	{
+		pStu = &students[i];
+		if(strcmp(idNumber, pStu->idNumber) == 0 && pStu->status == 1)
+		{
+			* stuId = students[i];
+			index = 1; 
+			printf("%d\n", index);   
+			// printf("\n|");
+			// printf("%s\t\t", stuId->idNumber);
+			// printf("|");
+			// printf("%s\t", stuId->name);
+			// printf("|");
+			// printf("%d\t", stuId->sex);
+			// printf("|\n");  
 		}
 	}
 
