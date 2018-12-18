@@ -106,3 +106,7 @@ A: 作用域：是指变量在函数中可以作用的有效范围
 	这个函数中 fscanf(fpStu, "%s%s%d%d%s", students[stuNum].idNumber, students[stuNum].name, &students[stuNum].sex, &students[stuNum].status, &students[stuNum].adminName); 有错误
 4. void writeFile(struct Student students[], int stuNum)
 	函数中有错误
+增加：
+5. int addStu(struct Student students[], int stuNum, struct Student stu, char idNumber[])
+	这个函数的参数 idNumber 没有必要，idNumber 是学生的学号，学生的学号应该由 stu.idNumer 得到，而不是另外单独传入！！
+6. 233行 fprintf(fpStu, "%s\t%s\t%d\t%d\t%s\n", ...   换行符？？？还要吗
