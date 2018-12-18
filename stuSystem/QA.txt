@@ -95,3 +95,12 @@ A: 作用域：是指变量在函数中可以作用的有效范围
 
 5. 新建一个文件，在删除学生的时候，把这个学生的信息写入这个文件中（以增加的模式写入） 
 
+
+
+20181218 针对 20181211 提出的更改中的第二点的代码改写中的错误：
+1. int addStu(struct Student students[], int stuNum, struct Student stu, char idNumber[], char adminName[])
+	这个函数中 char adminName[] 没有用到，不需要当做参数传入
+2. int addStu(struct Student students[], int stuNum, struct Student stu, char idNumber[], char adminName[])
+	这个函数中逻辑错误
+3. int readFile(struct Student students[]) 
+	这个函数中 fscanf(fpStu, "%s%s%d%d%s", students[stuNum].idNumber, students[stuNum].name, &students[stuNum].sex, &students[stuNum].status, &students[stuNum].adminName); 有错误
