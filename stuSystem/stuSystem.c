@@ -23,7 +23,7 @@ void printHead();
 int readFile(struct Student students[]);       //读取文件
 void writeFile(struct Student students[], int stuNum);   //写入文件（将文件中修改过的内容写入文件）
 // int addStu(struct Student students[], int stuNum, struct Student stu);
-int addStu(struct Student students[], int stuNum, struct Student stu, char idNumber[]);        //增加一条学生记录
+int addStu(struct Student students[], int stuNum, struct Student stu);        //增加一条学生记录
 void deleteStu(struct Student students[], char idNumber[], int stuNum);       //删除一条学生记录(使该学生的状态stastus==0)
 int searchStu(struct Student students[], int stuNum, struct Student resultStus[], int sex);    //根据性别查询符合条件的所有学生的信息并打印出来
 void printAll(struct Student students[], int stuNum);    //打印所有学生信息(包括状态stastus==0的学生)
@@ -69,7 +69,7 @@ int main()
 				while(getchar() != '\n');
 				stu = initStu(idNumber, name, sex, adminName);
 			//	stuNum = addStu(students, stuNum, stu);
-				stuNum = addStu(students, stuNum, stu, idNumber);   	
+				stuNum = addStu(students, stuNum, stu);   	
 				break;        			
 			case 'd':       //根据学号删除一条记录(使该学生的状态stastu==0)
 				printf("please input an idNumber endwith enter: ");
@@ -226,11 +226,11 @@ void writeFile(struct Student students[], int stuNum)
 		printf("FILE stuFile.txt open FAIL\n");
 		return;
 	}
-	for (int i = 0; i < stuNum - 1; ++i)
+	for (int i = 0; i < stuNum - 1; ++ i)
 	{
 		fprintf(fpStu, "%s\t%s\t%d\t%d\t%s\n", students[i].idNumber, students[i].name, students[i].sex, students[i].status, students[i].adminName);
 	}
-	fprintf(fpStu, "%s\t%s\t%d\t%d\t%s\n", students[stuNum - 1].idNumber, students[stuNum - 1].name, students[stuNum - 1].sex, students[stuNum - 1].status, students[stuNum - 1].adminName);
+	fprintf(fpStu, "%s\t%s\t%d\t%d\t%s", students[stuNum - 1].idNumber, students[stuNum - 1].name, students[stuNum - 1].sex, students[stuNum - 1].status, students[stuNum - 1].adminName);
 	fclose(fpStu);
 	return;
 }
@@ -250,7 +250,7 @@ int addStu(struct Student students[], int stuNum, struct Student stu)
 }
 */
 
-int addStu(struct Student students[], int stuNum, struct Student stu, char idNumber[])
+int addStu(struct Student students[], int stuNum, struct Student stu)
 {
 	int flag = 0;
 	struct Student * pStu;
@@ -262,7 +262,7 @@ int addStu(struct Student students[], int stuNum, struct Student stu, char idNum
 	for(int i = 0; i < stuNum; ++i)
 	{
 		pStu = &students[i];
-		if(strcmp(idNumber, students[i].idNumber) == 0 && pStu->status == 1)
+		if(strcmp(stu.idNumber, students[i].idNumber) == 0 && pStu->status == 1)
 		{
 			flag = 1;
 			break;
