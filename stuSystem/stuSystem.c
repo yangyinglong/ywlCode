@@ -22,11 +22,12 @@ FILE * fpStu;    //定义一个指向文件的指针fpStu
 void printHead();
 int readFile(struct Student students[]);       //读取文件
 void writeFile(struct Student students[], int stuNum);   //写入文件（将文件中修改过的内容写入文件）
+void writeStu(struct Student * pStu, FILE * fp);
 int addStu(struct Student students[], int stuNum, struct Student stu);        //增加一条学生记录
 void deleteStu(struct Student students[], char idNumber[], int stuNum);       //删除一条学生记录(使该学生的状态stastus==0)
 int searchStu(struct Student students[], int stuNum, struct Student resultStus[], int sex);    //根据性别查询符合条件的所有学生的信息并打印出来
 void printAll(struct Student students[], int stuNum);    //打印所有学生信息(包括状态stastus==0的学生)
-void printOne(struct Student * pRStu, int resultNum);
+void printOne(struct Student * pRStu);
 void inputCharArr(char charArr[], int len);
 struct Student initStu(char idNumber[], char name[], int sex, char adminName[]);
 int searchStuById(struct Student students[], int stuNum, char idNumber[], struct Student * pRStu);
@@ -85,7 +86,16 @@ int main()
 				inputCharArr(idNumber, 6);
 				while(getchar() != '\n');
 				resultNum = searchStuById(students, stuNum, idNumber, &stu);
-				printOne(&stu, resultNum);
+				if (1 == resultNum)
+				{
+					printOne(&stu);
+				}
+				else
+				{
+					printHead();
+					printf("|	  no this student !  	 |\n");
+				}
+				
 				break; 
 			case 'p':       //打印所有学生信息
 				printAll(students, stuNum);
@@ -165,7 +175,10 @@ void printAll(struct Student students[], int stuNum)    //void类型的函数pri
 	return;
 }
 
-void printOne(struct Student * pRStu, int resultNum)
+/**
+ * 打印一个学生的信息
+ */
+void printOne(struct Student * pRStu)
 {
 	printHead();
 	for (int j = 0; j < 33; ++j)
@@ -173,8 +186,8 @@ void printOne(struct Student * pRStu, int resultNum)
 		printf("-");			
 	}
 	printf("\n");
-	if(resultNum == 1)
-	{
+	// if(resultNum == 1)
+	// {
 		printf("%s\t", pRStu->idNumber);
 		printf("|");
 		printf("%s\t", pRStu->name);
@@ -183,11 +196,11 @@ void printOne(struct Student * pRStu, int resultNum)
 		printf("|");
 		printf("%s\t", pRStu->adminName);
 		printf("|\n");
-	}
-	else
-	{
-		printf("|	  no this student !  	 |\n");
-	}
+	// }
+	// else
+	// {
+	// 	printf("|	  no this student !  	 |\n");
+	// }
 	for (int j = 0; j < 33; ++j)
 	{
 		printf("-");			
@@ -264,6 +277,19 @@ void writeFile(struct Student students[], int stuNum)
 	return;
 }
 
+void writeStu(struct Student * pStu, FILE * fp)
+{
+	// fpStu = fopen("deleteStu.txt", "a+");
+	if (fp == NULL)
+	{
+		printf("FILE deleteStu.txt open FAIL\n");
+		return;
+	}
+	fprintf(fp, "\n%s\t%s\t%d\t%d\t%s", pStu->idNumber, pStu->name, pStu->sex, pStu->status, pStu->adminName);
+	fclose(fp);
+	return;
+}
+
 int addStu(struct Student students[], int stuNum, struct Student stu)
 {
 	struct Student * pStu;
@@ -282,6 +308,8 @@ int addStu(struct Student students[], int stuNum, struct Student stu)
 		}
 	}
 	students[stuNum] = stu;
+	fpStu = fopen("students.txt", "a+");
+	writeStu(&stu, fpStu);
 	stuNum ++;
 	printf("student add success!\n");
 	return stuNum;
@@ -296,6 +324,8 @@ void deleteStu(struct Student students[], char idNumber[], int stuNum)
 		if(strcmp(idNumber, pStu->idNumber) == 0 && pStu->status == 1)
 		{
 			pStu->status = 0;
+			fpStu = fopen("deleteStu.txt", "a+");
+			writeStu(pStu, fpStu);
 			printf("delete success\n");
 			return;
 		}
