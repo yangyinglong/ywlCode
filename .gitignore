@@ -17,3 +17,5 @@
 /notsee
 /.vscode
 /linkedList
+*.out
+*.o
