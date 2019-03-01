@@ -1,12 +1,6 @@
-00001	Alice	0	1	Zhang
-00002	Mike	1	1	Zhang
 00003	Jone	1	1	Zhang
-00004	Tina	0	1	Zhang
 00005	Yang	1	1	Zhang
 00006	Tomato	0	1	Zhang
 00007	June	0	1	Zhang
 00008	Nuna	0	1	Zhang
 00009	Mark	1	1	Zhang
-00010	Timer	0	1	Zhang
-00011	Nimi	1	0	Zhang
-00011	Grace	0	1	Zhang

@@ -22,15 +22,14 @@ FILE * fpStu;    //定义一个指向文件的指针fpStu
 void printHead();
 int readFile(struct Student students[]);       //读取文件
 void writeFile(struct Student students[], int stuNum);   //写入文件（将文件中修改过的内容写入文件）
-// int addStu(struct Student students[], int stuNum, struct Student stu);
+void writeStu(struct Student * pStu, FILE * fp);
 int addStu(struct Student students[], int stuNum, struct Student stu);        //增加一条学生记录
 void deleteStu(struct Student students[], char idNumber[], int stuNum);       //删除一条学生记录(使该学生的状态stastus==0)
 int searchStu(struct Student students[], int stuNum, struct Student resultStus[], int sex);    //根据性别查询符合条件的所有学生的信息并打印出来
 void printAll(struct Student students[], int stuNum);    //打印所有学生信息(包括状态stastus==0的学生)
-void printOne(struct Student * pRStu, int resultNum);
+void printOne(struct Student * pRStu);
 void inputCharArr(char charArr[], int len);
 struct Student initStu(char idNumber[], char name[], int sex, char adminName[]);
-//int searchStuById(struct Student students[], int stuNum, struct Student resultStus[], char idNumber[]);
 int searchStuById(struct Student students[], int stuNum, char idNumber[], struct Student * pRStu);
 
 
@@ -68,7 +67,6 @@ int main()
 				scanf("%d", &sex);
 				while(getchar() != '\n');
 				stu = initStu(idNumber, name, sex, adminName);
-			//	stuNum = addStu(students, stuNum, stu);
 				stuNum = addStu(students, stuNum, stu);   	
 				break;        			
 			case 'd':       //根据学号删除一条记录(使该学生的状态stastu==0)
@@ -88,7 +86,16 @@ int main()
 				inputCharArr(idNumber, 6);
 				while(getchar() != '\n');
 				resultNum = searchStuById(students, stuNum, idNumber, &stu);
-				printOne(&stu, resultNum);
+				if (1 == resultNum)
+				{
+					printOne(&stu);
+				}
+				else
+				{
+					printHead();
+					printf("|	  no this student !  	 |\n");
+				}
+				
 				break; 
 			case 'p':       //打印所有学生信息
 				printAll(students, stuNum);
@@ -168,7 +175,10 @@ void printAll(struct Student students[], int stuNum)    //void类型的函数pri
 	return;
 }
 
-void printOne(struct Student * pRStu, int resultNum)
+/**
+ * 打印一个学生的信息
+ */
+void printOne(struct Student * pRStu)
 {
 	printHead();
 	for (int j = 0; j < 33; ++j)
@@ -176,8 +186,8 @@ void printOne(struct Student * pRStu, int resultNum)
 		printf("-");			
 	}
 	printf("\n");
-	if(resultNum == 1)
-	{
+	// if(resultNum == 1)
+	// {
 		printf("%s\t", pRStu->idNumber);
 		printf("|");
 		printf("%s\t", pRStu->name);
@@ -186,11 +196,11 @@ void printOne(struct Student * pRStu, int resultNum)
 		printf("|");
 		printf("%s\t", pRStu->adminName);
 		printf("|\n");
-	}
-	else
-	{
-		printf("|	  no this student !  	 |\n");
-	}
+	// }
+	// else
+	// {
+	// 	printf("|	  no this student !  	 |\n");
+	// }
 	for (int j = 0; j < 33; ++j)
 	{
 		printf("-");			
@@ -218,6 +228,7 @@ int readFile(struct Student students[])
 	return stuNum;
 }
 
+/*
 void writeFile(struct Student students[], int stuNum)
 {
 	fpStu = fopen("students.txt", "w");
@@ -234,25 +245,53 @@ void writeFile(struct Student students[], int stuNum)
 	fclose(fpStu);
 	return;
 }
-
-/*
-int addStu(struct Student students[], int stuNum, struct Student stu)
-{
-	if (stuNum + 1 > MAX_STU_NUM - 1)
-	{
-		printf("students had max, stu add fail\n");
-		return stuNum;
-	}
-	students[stuNum] = stu;
-	stuNum ++;
-	printf("student add success!\n");
-	return stuNum;
-}
 */
 
+void writeFile(struct Student students[], int stuNum)
+{
+	fpStu = fopen("students.txt", "w");
+	int j = 0;
+	if (fpStu == NULL)
+	{
+		printf("FILE stuFile.txt open FAIL\n");
+		return;
+	}
+	for (int i = 0; i < stuNum - 1; ++ i)
+	{
+		if(students[i].status == 1)
+		{
+			j += 1;
+			if(j != 1)
+			{
+				fprintf(fpStu,"\n");
+			}
+			fprintf(fpStu, "%s\t%s\t%d\t%d\t%s", students[i].idNumber, students[i].name, students[i].sex, students[i].status, students[i].adminName);
+		}
+	}
+	if(students[stuNum - 1].status == 1)
+		{
+			fprintf(fpStu,"\n");
+			fprintf(fpStu, "%s\t%s\t%d\t%d\t%s", students[stuNum - 1].idNumber, students[stuNum - 1].name, students[stuNum - 1].sex, students[stuNum - 1].status, students[stuNum - 1].adminName);
+		}	
+	fclose(fpStu);
+	return;
+}
+
+void writeStu(struct Student * pStu, FILE * fp)
+{
+	// fpStu = fopen("deleteStu.txt", "a+");
+	if (fp == NULL)
+	{
+		printf("FILE deleteStu.txt open FAIL\n");
+		return;
+	}
+	fprintf(fp, "\n%s\t%s\t%d\t%d\t%s", pStu->idNumber, pStu->name, pStu->sex, pStu->status, pStu->adminName);
+	fclose(fp);
+	return;
+}
+
 int addStu(struct Student students[], int stuNum, struct Student stu)
 {
-	int flag = 0;
 	struct Student * pStu;
 	if (stuNum + 1 > MAX_STU_NUM - 1)
 	{
@@ -264,43 +303,34 @@ int addStu(struct Student students[], int stuNum, struct Student stu)
 		pStu = &students[i];
 		if(strcmp(stu.idNumber, students[i].idNumber) == 0 && pStu->status == 1)
 		{
-			flag = 1;
-			break;
+			printf("student already exist!\n");
+			return stuNum;
 		}
 	}
-	if(flag == 0)
-	{
-		students[stuNum] = stu;
-		stuNum ++;
-		printf("student add success!\n");
-	}
-	else
-	{
-		printf("student already exist!\n");
-	}
+	students[stuNum] = stu;
+	fpStu = fopen("students.txt", "a+");
+	writeStu(&stu, fpStu);
+	stuNum ++;
+	printf("student add success!\n");
 	return stuNum;
 }
 
 void deleteStu(struct Student students[], char idNumber[], int stuNum)
 {
 	struct Student * pStu;
-	int flag = 0;
 	for(int i = 0; i < stuNum; ++i)
 	{
 		pStu = &students[i];
 		if(strcmp(idNumber, pStu->idNumber) == 0 && pStu->status == 1)
 		{
 			pStu->status = 0;
+			fpStu = fopen("deleteStu.txt", "a+");
+			writeStu(pStu, fpStu);
 			printf("delete success\n");
-			flag = 1;
 			return;
 		}
 	}
-	if(flag == 0)
-	{
-		printf("no this student\n");
-		return;
-	}
+	printf("no this student\n");
 	return;
 }
 
@@ -346,25 +376,6 @@ struct Student initStu(char idNumber[], char name[], int sex, char adminName[])
 	stu.status = 1;
 	return stu;
 };
-
-/*
-int searchStuById(struct Student students[], int stuNum, struct Student resultStus[], char idNumber[])
-{
-	struct Student * pStu;
-	int index = 0;
-	for(int i = 0; i < stuNum; ++i)
-	{
-		pStu = &students[i];
-		if(strcmp(idNumber, pStu->idNumber) == 0 && pStu->status == 1)
-		{
-			resultStus[index] = students[i];  
-			index ++;            
-		}
-	}
-
-	return index;
-}
-*/
 
 int searchStuById(struct Student students[], int stuNum, char idNumber[], struct Student * pRStu)
 {
