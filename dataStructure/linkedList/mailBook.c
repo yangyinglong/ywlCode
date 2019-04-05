@@ -50,15 +50,15 @@ struct mail * createList()
 	struct mail * pHead = (struct mail *)malloc(sizeof(struct mail));
 	struct mail * pTail = pHead;
 	pTail->pNext = NULL;
-	for (int i = 0; i < 1; ++i)
-	{
-		struct mail * pNew = (struct mail *)malloc(sizeof(struct mail));
-		strcat(pNew->name, "cang");
-		strcpy(pNew->phone, "15968161237");
-		pTail->pNext = pNew;
-		pNew->pNext = NULL;
-		pTail = pNew;
-	}
+	// for (int i = 0; i < 1; ++i)
+	// {
+	// 	struct mail * pNew = (struct mail *)malloc(sizeof(struct mail));
+	// 	strcat(pNew->name, "cang");
+	// 	strcpy(pNew->phone, "15968161237");
+	// 	pTail->pNext = pNew;
+	// 	pNew->pNext = NULL;
+	// 	pTail = pNew;
+	// }
 	return pHead;
 }
 
@@ -72,6 +72,12 @@ void insertMail(struct mail * pHead, char * name, char * phone)
 	struct mail * pPreviousMail = pHead;
 	struct mail * pNextMail = pHead->pNext;
 
+	if (pNextMail == NULL)
+	{
+		pMail->pNext = pNextMail;
+		pPreviousMail->pNext = pMail;
+		return;
+	}
 	if (strcmp(name, pNextMail->name) < 0)
 	{
 		pMail->pNext = pNextMail;
