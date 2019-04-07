@@ -21,7 +21,7 @@ FILE * fpStu;    //定义一个指向文件的指针fpStu
 //函数声明
 void printHead();
 int readFile(struct Student students[]);       //读取文件
-void writeFile(struct Student students[], int stuNum);   //写入文件（将文件中修改过的内容写入文件）
+void writeFile(struct Student students[], int stuNum);   //写入文件（将文件中修改后的内容写入文件）
 void writeStu(struct Student * pStu, FILE * fp);
 int addStu(struct Student students[], int stuNum, struct Student stu);        //增加一条学生记录
 void deleteStu(struct Student students[], char idNumber[], int stuNum);       //删除一条学生记录(使该学生的状态stastus==0)
@@ -45,9 +45,9 @@ int main()
 	char adminName[10];
 	int sex;  
 	int resultNum;    //定义学生数量，存放符合条件的学生数量
-	struct Student stu;
+	struct Student stu;      //struct Student(学生结构体)类型的变量stu
 
-	stuNum = readFile(students); 	
+	stuNum = readFile(students); 	//从文件中读取学生数量
 	printf("a-addStu\td-delete\tf-searchStu\ts-searchStuById\tp-printAll\tq-exit\n");
 	while(sign == 1) 
 	{
@@ -65,7 +65,7 @@ int main()
 				inputCharArr(adminName, 10);
 				printf("please input a sex(0 or 1) endwith enter: ");
 				scanf("%d", &sex);
-				while(getchar() != '\n');
+				while(getchar() != '\n');          //用来在输入命令后清除缓冲
 				stu = initStu(idNumber, name, sex, adminName);
 				stuNum = addStu(students, stuNum, stu);   	
 				break;        			
@@ -86,7 +86,7 @@ int main()
 				inputCharArr(idNumber, 6);
 				while(getchar() != '\n');
 				resultNum = searchStuById(students, stuNum, idNumber, &stu);
-				if (1 == resultNum)
+				if (1 == resultNum)   //如果有一个学生的学号存在，
 				{
 					printOne(&stu);
 				}
@@ -133,6 +133,9 @@ void printHead()
 	printf("|IdNum\t|Name\t|Sex\t|Admin\t|\n");	
 }
 
+/**
+* 打印所有有效学生的信息（状态为1）
+ */
 void printAll(struct Student students[], int stuNum)    //void类型的函数printAll中传入了struct Student类型的students和int类型的stuNum这两个参数
 {
 	printHead();
@@ -176,7 +179,7 @@ void printAll(struct Student students[], int stuNum)    //void类型的函数pri
 }
 
 /**
- * 打印一个学生的信息
+ * 打印一个学生的信息（在按学号查找学生时用到）
  */
 void printOne(struct Student * pRStu)
 {
@@ -209,6 +212,9 @@ void printOne(struct Student * pRStu)
 	return;
 }
 
+/**
+ * 读取打开文件中的内容
+ */
 int readFile(struct Student students[])
 {
 	int stuNum = 0;
@@ -247,6 +253,9 @@ void writeFile(struct Student students[], int stuNum)
 }
 */
 
+/**
+ *对学生系统中的内容修改后进行保存
+ */
 void writeFile(struct Student students[], int stuNum)
 {
 	fpStu = fopen("students.txt", "w");
@@ -277,6 +286,9 @@ void writeFile(struct Student students[], int stuNum)
 	return;
 }
 
+/**
+ * 将单个学生的信息写入指定文件（在按学号删除学生信息时用到）
+ */
 void writeStu(struct Student * pStu, FILE * fp)
 {
 	// fpStu = fopen("deleteStu.txt", "a+");
@@ -290,6 +302,9 @@ void writeStu(struct Student * pStu, FILE * fp)
 	return;
 }
 
+/**
+ * 增加一个学生
+ */
 int addStu(struct Student students[], int stuNum, struct Student stu)
 {
 	struct Student * pStu;
@@ -315,6 +330,9 @@ int addStu(struct Student students[], int stuNum, struct Student stu)
 	return stuNum;
 }
 
+/**
+ * 按学号删除一个学生并将其信息保存到指定的文件中
+ */
 void deleteStu(struct Student students[], char idNumber[], int stuNum)
 {
 	struct Student * pStu;
@@ -334,6 +352,9 @@ void deleteStu(struct Student students[], char idNumber[], int stuNum)
 	return;
 }
 
+/**
+ * 输入性别查找并打印所有性别相同的学生的信息
+ */
 int searchStu(struct Student students[], int stuNum, struct Student resultStus[], int sex)
 {
 	struct Student * pStu;
@@ -351,6 +372,9 @@ int searchStu(struct Student students[], int stuNum, struct Student resultStus[]
 	return index;
 }
 
+/**
+ * 输入函数
+ */
 void inputCharArr(char charArr[], int len)
 {
 	char c;
@@ -366,6 +390,9 @@ void inputCharArr(char charArr[], int len)
 	while((c = getchar()) != '\n');
 }
 
+/**
+ * 初始化学生信息
+ */
 struct Student initStu(char idNumber[], char name[], int sex, char adminName[])
 {
 	struct Student stu;
@@ -377,6 +404,9 @@ struct Student initStu(char idNumber[], char name[], int sex, char adminName[])
 	return stu;
 };
 
+/**
+ * 按照学号查找学生
+ */
 int searchStuById(struct Student students[], int stuNum, char idNumber[], struct Student * pRStu)
 {
 	struct Student * pStu;

@@ -5,6 +5,7 @@
 int main()
 {
 	int source;
+	scanf("%d", &source);
 
 	switch(source)
 	{
@@ -22,8 +23,9 @@ int main()
 		case 8:
 			printf("C\n");
 			break;
-		default:
+		default:       //default 语句不一定必须要
 		
 			break;
 	}
+	return 0;
 }
