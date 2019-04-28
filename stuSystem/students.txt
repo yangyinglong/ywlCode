@@ -7,10 +7,4 @@
 00010	Amin	0	1	Huang
 00008	Nuna	0	1	Zhang
 00009	Mark	1	1	Zhang
-<<<<<<< HEAD
-00010	Timer	0	1	Zhang
-=======
-00006	Tomato	0	1	Zhang
-00007	June	0	1	Zhang
-00011	Zhao	0	1	Huang
->>>>>>> 1231f72f7e357f7ea9d4040fba77c4526a9d6142
+00006	Tom	1	1	Zhang
