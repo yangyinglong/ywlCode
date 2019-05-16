@@ -47,7 +47,7 @@ void inputCharArr(char charArr[], int len);
 struct PLHead * CreatePLHead();
 // int DestoryPLHead(struct PLHead * pstHead);  //销毁整个数据链表
 struct Student * CreateNewNode(struct Student * pstData);
-int Judge(struct PLHead *pstHead, struct Student *pstNew);
+//int Judge(struct PLHead *pstHead, struct Student *pstNew);
 int InsertStudentAtTail(struct PLHead * pstHead, struct Student * pstNewNode);
 int RemoveStudent(struct PLHead * pstHead, struct Student * pstNewNode);
 int DestoryNode(struct Student * pstNode);
@@ -86,20 +86,20 @@ int main(int argc, char const *argv[])
 				printf("please input an adminName endwith enter: ");
 				inputCharArr(NodeData.adminName, 10);
 				printf("please input a sex(0 or 1) endwith enter: ");
-				scanf("%d", &sex);
+				scanf("%d", &NodeData.sex);
 				while(getchar() != '\n');
 				pstNew = CreateNewNode(&NodeData);  
 				// Judge(pstHead, pstNew); 
-				judge = Judge(pstHead, pstNew);
-				if(1 == judge)
-				{
-					InsertStudentAtTail(pstHead, pstNew);
-				}
-				else
-				{
-					printf("The student has already exist");
-				}
-				// InsertStudentAtTail(pstHead, pstNew);
+				// judge = Judge(pstHead, pstNew);
+				// if(1 == judge)
+				// {
+				// 	InsertStudentAtTail(pstHead, pstNew);
+				// }
+				// else
+				// {
+				// 	printf("The student has already exist");
+				// }
+				InsertStudentAtTail(pstHead, pstNew);
 				break;
 			case 'd':       //根据学号删除一条记录(使该学生的状态stastu==0)
 				printf("please input an idNumber endwith enter: ");
@@ -117,7 +117,7 @@ int main(int argc, char const *argv[])
 					printf("%s has been removed\n",pstTemp -> idNumber);
 					DestoryNode(pstTemp);
 				}
-
+				break;
 			case 's':
 				printf("please input an idNumber endwith enter: ");
 				inputCharArr(idNumber, 6);
@@ -131,11 +131,8 @@ int main(int argc, char const *argv[])
 				else
 				{
 					PrintOneNode(pstTemp);
-
-					// RemoveStudent(pstHead, pstTemp);
-					// printf("%s has been removed\n",pstTemp -> idNumber);
-					// DestoryNode(pstTemp);
 				}
+				break;
 			case 'p':       //打印所有学生信息
 				PrintAllNode(pstHead);
 				break;        
@@ -152,12 +149,6 @@ int main(int argc, char const *argv[])
 		}
 	}
 
-
-
-
-
-
-
 	// strcpy(NodeData.idNumber, "0001");
 	// strcpy(NodeData.name, "Make");
 	// sex = 1;
@@ -165,7 +156,6 @@ int main(int argc, char const *argv[])
 	// pstNew = CreateNewNode(&NodeData);       //将新的变量赋值给新的节点
 	// InsertStudentAtTail(pstHead, pstNew);    //将新的节点插入到链表的尾部
 	
-
 	// strcpy(NodeData.idNumber, "0002");
 	// strcpy(NodeData.name, "Jone");
 	// sex = 1;
@@ -173,7 +163,6 @@ int main(int argc, char const *argv[])
 	// pstNew = CreateNewNode(&NodeData);       //将新的变量赋值给新的节点
 	// InsertStudentAtTail(pstHead, pstNew);    //将新的节点插入到链表的尾部
 	
-
 	// strcpy(NodeData.idNumber, "0003");
 	// strcpy(NodeData.name, "July");
 	// sex = 1;
@@ -181,7 +170,6 @@ int main(int argc, char const *argv[])
 	// pstNew = CreateNewNode(&NodeData);       //将新的变量赋值给新的节点
 	// InsertStudentAtTail(pstHead, pstNew);    //将新的节点插入到链表的尾部
 	// PrintAllNode(pstHead);
-
 
 	// pstTemp = SearchNodeById(pstHead,"0002");
 	// if(NULL == pstTemp)
@@ -199,8 +187,6 @@ int main(int argc, char const *argv[])
 	// }
 		
 	// PrintAllNode(pstHead);
-
-
 
 	return 0;
 }
@@ -341,26 +327,25 @@ struct Student *CreateNewNode(struct Student * pstData)
 }
 
 //插入新的节点后判断该学生信息是否已存在
-int Judge(struct PLHead * pstHead, struct Student *pstNew)
-{
-	struct Student *pstNode = NULL;
-	pstNode = pstHead -> pstFirst;
-	if(strcmp(pstNode -> idNumber,pstNew -> idNumber) != 0)
-	{
-		pstNode = pstNode -> pstNext;
-		if(pstNode == NULL)
-		{
-			return 0;
-		}
-	}
-	else
-	{
-		return 1;
-		// InsertStudentAtTail(pstHead, pstNew);
-	}
-}
+// int Judge(struct PLHead * pstHead, struct Student *pstNew)
+// {
+// 	struct Student *pstNode = NULL;
+// 	pstNode = pstHead -> pstFirst;
+// 	if(strcmp(pstNode -> idNumber,pstNew -> idNumber) != 0)
+// 	{
+// 		pstNode = pstNode -> pstNext;
+// 		if(pstNode == NULL)
+// 		{
+// 			return 0;
+// 		}
+// 	}
+// 	else
+// 	{
+// 		return 1;
+// 	}
+// }
 
-//在尾部增加一条学生信息
+//判断该学生信息不存在后在在尾部进行增加
 int InsertStudentAtTail(struct PLHead * pstHead, struct Student * pstNewNode)
 {
 	struct Student *pstLast = NULL;
@@ -390,8 +375,7 @@ int InsertStudentAtTail(struct PLHead * pstHead, struct Student * pstNewNode)
 	return 0;
 }
 
-//移除一个节点
-
+//移除一个节点，删除一条学生信息
 int RemoveStudent(struct PLHead * pstHead, struct Student * pstNode)
 {
 	struct Student *pstPrev = NULL;       //pstPrev 用来保存被移除节点的前一个节点的地址
@@ -435,7 +419,7 @@ int RemoveStudent(struct PLHead * pstHead, struct Student * pstNode)
 	return 0;
 } 
 
-//销毁一个节点,即彻底删除一个学生数据
+//销毁一个节点,即彻底删除一个学生数据，将该节点占用的内存释放
 int DestoryNode(struct Student * pstNode)
 {
 	if(pstNode != NULL)
