@@ -140,3 +140,53 @@ A: 作用域：是指变量在函数中可以作用的有效范围
 		}
 		pstLast = pstLast -> pstNext;
 	}
+
+
+
+201905023 在stuSystemLinked.c中的问题
+1. memset() 函数的作用以及参数的作用
+2. 	//插入新的节点后判断该学生信息是否已存在
+	int Judge(struct PLHead * pstHead, struct Student *pstNew)
+	{
+		struct Student *pstNode = NULL;
+		pstNode = pstHead -> pstFirst;
+		if(strcmp(pstNode -> idNumber,pstNew -> idNumber) != 0)
+		{
+			pstNode = pstNode -> pstNext;
+			if(pstNode == NULL)
+			{
+				return 0;
+			}
+		}
+		else
+		{
+			return 1;
+			// InsertStudentAtTail(pstHead, pstNew);
+		}
+	}
+	这个函数有问题，第一，如果第一个if成立进入if，然后第二个if不成立，那就没有返回值
+	由于这个函数的问题，导致在main()函数中插入一个节点到链表中出错，自己修改
+3. 读取一个文件的时候，在主函数main()中对readFile()这个函数的返回值做判断，如果文件打开失败，则主函数必须做出响应，比如提示用户然后退出
+	// 读取文件中的信息
+	if (-1 == readFile(pstHead))
+	{
+		// 文件读取失败
+		printf("error\n");
+		return -1;
+	}
+4. 信息写入到文件中，肯定要打开文件，跟读取文件相同，文件可能会打开失败，所以必须要有返回值，不应该是void，而且要在main()函数中做出响应，自己修改，第一版写的时候不够严密。
+5. 文件的读取，就是把文件中的信息读取到链表中，具体步骤如下
+	while(文件没有读取到末尾) 
+	{
+		第一步：初始化一个学生结构体
+		第二步：将文件中的一条数据读取到学生结构体中
+		第三步：根据结构体生成一个节点
+		第四步：将节点插入到链表中
+	}
+6. 文件的写入，就是把链表中的信息写入到文件中，具体步骤如下
+	while(节点不为空) 
+	{
+		第一步：说明节点不为空，这个节点里面的信息是一条学生信息，写入文件中
+		第二步：取这个节点的下一个节点
+		第三步：如果下一个节点不为空，则在文件中写入一个换行符\n
+	}
