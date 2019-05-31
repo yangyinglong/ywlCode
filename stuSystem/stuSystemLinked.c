@@ -123,10 +123,17 @@ int main(int argc, char const *argv[])
 				else
 				{
 					RemoveStudent(pstHead, pstTemp);
-					fpStu = fopen("deleteNode.txt", "a+");
-					writeNode(pstTemp, fpStu);
-					printf("%s has been removed\n",pstTemp -> idNumber);
-					DestoryNode(pstTemp);
+					if (-1 == writeNode(pstTemp, fpStu))
+					{
+						// 文件读取失败
+						printf("FILE stuFile.txt open FAIL\n");
+						return -1;
+					}
+					else
+					{
+						printf("%s has been removed\n",pstTemp -> idNumber);
+						DestoryNode(pstTemp);
+					}
 				}
 				break;
 			// case 'f':       //根据性别查询符合条件的所有学生的信息并打印出来
@@ -153,9 +160,17 @@ int main(int argc, char const *argv[])
 				PrintAllNode(pstHead);
 				break;        
 			case 'q':       //保存修改后的学生信息并退出系统
-				writeFile(pstHead);                      
-				printf("Students save success!\nBye\n");
-				sign = 0;
+				if (-1 == writeFile(pstHead))
+				{
+					// 文件读取失败
+					printf("FILE stuFile.txt open FAIL\n");
+					return -1;
+				}
+				else
+				{
+					printf("Students save success!\nBye\n");
+					sign = 0;
+				}                      
 				break;       
 			default:        //如果命令输入错误就进行提示
 				printf("please choose the true order!\n");
@@ -498,14 +513,14 @@ int readFile(struct PLHead * pstHead)
 
 
 //对学生系统中的内容修改后进行保存
-void writeFile(struct PLHead * pstHead)      //这个长度应该怎么引入
+int writeFile(struct PLHead * pstHead)      //这个长度应该怎么引入
 {
 	fpStu = fopen("studentNode.txt", "w");
 	struct Student *pstNode = NULL;
 	if (fpStu == NULL)
 	{
 		printf("FILE stuFile.txt open FAIL\n");
-		return;
+		return -1;
 	}
 	pstNode = pstHead -> pstFirst;
 	while(pstNode != NULL)     
@@ -519,20 +534,21 @@ void writeFile(struct PLHead * pstHead)      //这个长度应该怎么引入
 		}	
 	}
 	fclose(fpStu);
-	return;
+	return 0;
 }
 
 //将删除的学生信息写入到新的文件
-void writeNode(struct Student * pstNode, FILE * fpStu)
+int writeNode(struct Student * pstNode, FILE * fpStu)
 {
+	fpStu = fopen("deleteNode.txt", "a+");
 	if (fpStu == NULL)
 	{
 		printf("FILE deleteNode.txt open FAIL\n");
-		return;
+		return -1;
 	}
 	fprintf(fpStu, "%s\t%s\t%d\t%s\n", pstNode->idNumber, pstNode->name, pstNode->sex, pstNode->adminName);
 	fclose(fpStu);
-	return;
+	return 0;
 }
 
 
