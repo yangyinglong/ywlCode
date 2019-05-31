@@ -47,13 +47,14 @@ void inputCharArr(char charArr[], int len);
 struct PLHead * CreatePLHead();
 // int DestoryPLHead(struct PLHead * pstHead);  //销毁整个数据链表
 struct Student * CreateNewNode(struct Student * pstData);
-//int Judge(struct PLHead *pstHead, struct Student *pstNew);
+int Judge(struct PLHead *pstHead, struct Student *pstNew);
 int InsertStudentAtTail(struct PLHead * pstHead, struct Student * pstNewNode);
 int RemoveStudent(struct PLHead * pstHead, struct Student * pstNewNode);
 int DestoryNode(struct Student * pstNode);
 struct Student *SearchNodeById(struct PLHead *pstHead, char *idNumber);
-
-
+int readFile(struct PLHead * pstHead);
+void writeFile(struct PLHead * pstHead) ;
+void writeNode(struct Student * pstNode, FILE * fpStu);
 
 int main(int argc, char const *argv[])
 {
@@ -70,6 +71,15 @@ int main(int argc, char const *argv[])
 	char order;          //用来输入命令
 	int sign = 1;        //作为循环继续1或退出0的标记
 	int judge = 0;
+
+	// 读取文件中的信息
+	if (-1 == readFile(pstHead))
+	{
+		// 文件读取失败
+		printf("FILE stuFile.txt open FAIL\n");
+		return -1;
+	}
+
 	printf("a-addStu\td-delete\tf-searchStu\ts-searchStuById\tp-printAll\tq-exit\n");
 	while(sign == 1) 
 	{
@@ -89,17 +99,16 @@ int main(int argc, char const *argv[])
 				scanf("%d", &NodeData.sex);
 				while(getchar() != '\n');
 				pstNew = CreateNewNode(&NodeData);  
-				// Judge(pstHead, pstNew); 
-				// judge = Judge(pstHead, pstNew);
-				// if(1 == judge)
-				// {
-				// 	InsertStudentAtTail(pstHead, pstNew);
-				// }
-				// else
-				// {
-				// 	printf("The student has already exist");
-				// }
-				InsertStudentAtTail(pstHead, pstNew);
+				Judge(pstHead, pstNew); 
+				judge = Judge(pstHead, pstNew);
+				if(1 == judge)
+				{
+					InsertStudentAtTail(pstHead, pstNew);
+				}
+				else
+				{
+					printf("The student has already exist\n");
+				}
 				break;
 			case 'd':       //根据学号删除一条记录(使该学生的状态stastu==0)
 				printf("please input an idNumber endwith enter: ");
@@ -114,10 +123,17 @@ int main(int argc, char const *argv[])
 				else
 				{
 					RemoveStudent(pstHead, pstTemp);
+					fpStu = fopen("deleteNode.txt", "a+");
+					writeNode(pstTemp, fpStu);
 					printf("%s has been removed\n",pstTemp -> idNumber);
 					DestoryNode(pstTemp);
 				}
 				break;
+			// case 'f':       //根据性别查询符合条件的所有学生的信息并打印出来
+			// 	printf("please input a sex(0 or 1) endwith enter: ");
+			// 	scanf("%d", &sex);
+			// 	while(getchar() != '\n');
+				
 			case 's':
 				printf("please input an idNumber endwith enter: ");
 				inputCharArr(idNumber, 6);
@@ -137,7 +153,7 @@ int main(int argc, char const *argv[])
 				PrintAllNode(pstHead);
 				break;        
 			case 'q':       //保存修改后的学生信息并退出系统
-				// writeFile(students, stuNum);                      
+				writeFile(pstHead);                      
 				printf("Students save success!\nBye\n");
 				sign = 0;
 				break;       
@@ -148,46 +164,6 @@ int main(int argc, char const *argv[])
 
 		}
 	}
-
-	// strcpy(NodeData.idNumber, "0001");
-	// strcpy(NodeData.name, "Make");
-	// sex = 1;
-	// strcpy(NodeData.adminName, "Zhang");
-	// pstNew = CreateNewNode(&NodeData);       //将新的变量赋值给新的节点
-	// InsertStudentAtTail(pstHead, pstNew);    //将新的节点插入到链表的尾部
-	
-	// strcpy(NodeData.idNumber, "0002");
-	// strcpy(NodeData.name, "Jone");
-	// sex = 1;
-	// strcpy(NodeData.adminName, "Zhang");
-	// pstNew = CreateNewNode(&NodeData);       //将新的变量赋值给新的节点
-	// InsertStudentAtTail(pstHead, pstNew);    //将新的节点插入到链表的尾部
-	
-	// strcpy(NodeData.idNumber, "0003");
-	// strcpy(NodeData.name, "July");
-	// sex = 1;
-	// strcpy(NodeData.adminName, "Zhang");
-	// pstNew = CreateNewNode(&NodeData);       //将新的变量赋值给新的节点
-	// InsertStudentAtTail(pstHead, pstNew);    //将新的节点插入到链表的尾部
-	// PrintAllNode(pstHead);
-
-	// pstTemp = SearchNodeById(pstHead,"0002");
-	// if(NULL == pstTemp)
-	// {
-	// 	PrintHead();
-	// 	printf("|	  no this student !  	|\n");
-	// }
-	// else
-	// {
-	// 	PrintOneNode(pstTemp);
-
-		// RemoveStudent(pstHead, pstTemp);
-		// printf("%s has been removed\n",pstTemp -> idNumber);
-		// DestoryNode(pstTemp);
-	// }
-		
-	// PrintAllNode(pstHead);
-
 	return 0;
 }
 
@@ -327,23 +303,27 @@ struct Student *CreateNewNode(struct Student * pstData)
 }
 
 //插入新的节点后判断该学生信息是否已存在
-// int Judge(struct PLHead * pstHead, struct Student *pstNew)
-// {
-// 	struct Student *pstNode = NULL;
-// 	pstNode = pstHead -> pstFirst;
-// 	if(strcmp(pstNode -> idNumber,pstNew -> idNumber) != 0)
-// 	{
-// 		pstNode = pstNode -> pstNext;
-// 		if(pstNode == NULL)
-// 		{
-// 			return 0;
-// 		}
-// 	}
-// 	else
-// 	{
-// 		return 1;
-// 	}
-// }
+int Judge(struct PLHead * pstHead, struct Student *pstNew)
+{
+	struct Student *pstNode = NULL;
+	if (NULL == pstHead -> pstFirst)
+	{
+		return 1;
+	}
+	else
+	{
+		pstNode = pstHead -> pstFirst;
+		if(strcmp(pstNode -> idNumber,pstNew -> idNumber) == 0)
+		{
+			return -1;
+		}
+		else
+		{
+			pstNode = pstNode -> pstNext;
+		}
+		return 1;
+	}
+}
 
 //判断该学生信息不存在后在在尾部进行增加
 int InsertStudentAtTail(struct PLHead * pstHead, struct Student * pstNewNode)
@@ -451,6 +431,30 @@ struct Student *SearchNodeById(struct PLHead *pstHead, char *idNumber)
 	return pstNode;
 }
 
+//根据性别输入查找学生并打印
+// void SearchNodeBySex(struct PLHead *pstHead, int sex)
+// {
+// 	struct PLHead *pstSex = CreatePLHead();
+// 	struct Student *pstNode = NULL;
+// 	struct Student *pstFind = NULL;
+// 	if(NULL == pstHead || NULL == sex)        //先判断参数是否正确
+// 	{
+// 		return;
+// 	}
+
+// 	pstNode = pstHead -> pstFirst;
+// 	pstFind = pstSex -> pstFirst;
+// 	while(pstNode != NULL)
+// 	{
+// 		if(pstNode -> sex == sex) 
+// 		{
+// 			pstFind = pstNode;
+// 		}
+// 		pstNode = pstNode -> pstNext;
+// 		pstFind = pstFind -> pstNext;
+// 	}
+// 	return 0;
+// }
 
 //定义输入函数，
 void inputCharArr(char charArr[], int len)
@@ -468,62 +472,68 @@ void inputCharArr(char charArr[], int len)
 	while((c = getchar()) != '\n');
 }
 
-/**
- * 读取打开文件中的内容
- */
-// int readFile(struct PLHead * pstHead)
-// {
-// 	int len = 0;
-// 	fpStu = fopen("studentNode.txt", "r");
-// 	if (fpStu == NULL)
-// 	{
-// 		printf("FILE stuFile.txt open FAIL\n");
-// 		return 0;
-// 	}
-// 	fseek(fpStu, 0L, SEEK_SET);
-// 	while (!feof(fpStu)) 
-// 	{
-// 		fscanf(fpStu, "%s%s%d%s", pstHead.idNumber, pstHead.name, &pstHead.sex, pstHead.adminName);
-// 		pstHead -> len ++;
-// 	}
-// 	fclose(fpStu);
-// 	return len;
-// }
 
-/**
- *对学生系统中的内容修改后进行保存
- */
-// void writeFile(struct PLHead * pstHead, int len)      //这个长度应该怎么引入
-// {
-// 	fpStu = fopen("studentNode.txt", "w");
-// 	struct Student *pstNode = NULL;
-// 	int j = 0;
-// 	if (fpStu == NULL)
-// 	{
-// 		printf("FILE stuFile.txt open FAIL\n");
-// 		return;
-// 	}
-// 	pstNode = pstHead -> pstFirst;
-// 	for (int i = 0; i < len - 1; ++ i)
-// 	{
-// 		j += 1;
-// 		if(j != 1)
-// 		{
-// 			fprintf(fpStu,"\n");
-// 		}
-// 		fprintf(fpStu, "%s\t%s\t%d\t%s", pstNode -> idNumber, pstNode -> name, pstNode -> sex, pstNode -> adminName);
-// 		pstNode = pstNode -> pstNext;
-// 	}
-// 	if(students[len - 1].status == 1)
-// 		{
-// 			fprintf(fpStu,"\n");
-// 			fprintf(fpStu, "%s\t%s\t%d\t%s", students[len - 1].idNumber, students[stuNum - 1].name, students[stuNum - 1].sex, students[stuNum - 1].status, students[stuNum - 1].adminName);
-// 		}	
-// 	fclose(fpStu);
-// 	return;
-// }
+//读取打开文件中的内容
+int readFile(struct PLHead * pstHead)
+{
+	int len = 0;
+	struct Student *pstNew;
+	fpStu = fopen("studentNode.txt", "r");
+	if (fpStu == NULL)
+	{
+		// printf("FILE stuFile.txt open FAIL\n");
+		return -1;
+	}
+	fseek(fpStu, 0L, SEEK_SET);
+	while (!feof(fpStu)) 
+	{
+		struct Student NodeData = {""};
+		fscanf(fpStu, "%s%s%d%s", NodeData.idNumber, NodeData.name, &NodeData.sex, NodeData.adminName);
+		pstNew = CreateNewNode(&NodeData);
+		InsertStudentAtTail(pstHead, pstNew);
+	}
+	fclose(fpStu);
+	return len;
+}
 
 
+//对学生系统中的内容修改后进行保存
+void writeFile(struct PLHead * pstHead)      //这个长度应该怎么引入
+{
+	fpStu = fopen("studentNode.txt", "w");
+	struct Student *pstNode = NULL;
+	if (fpStu == NULL)
+	{
+		printf("FILE stuFile.txt open FAIL\n");
+		return;
+	}
+	pstNode = pstHead -> pstFirst;
+	while(pstNode != NULL)     
+	{
+		//fprintf函数的作用是根据指定的格式化将数据输出到（写入）一个文件中
+		fprintf(fpStu, "%s\t%s\t%d\t%s", pstNode -> idNumber, pstNode -> name, pstNode -> sex, pstNode -> adminName);
+		pstNode = pstNode -> pstNext;
+		if(pstNode != NULL)
+		{
+			fprintf(fpStu,"\n");
+		}	
+	}
+	fclose(fpStu);
+	return;
+}
+
+//将删除的学生信息写入到新的文件
+void writeNode(struct Student * pstNode, FILE * fpStu)
+{
+	if (fpStu == NULL)
+	{
+		printf("FILE deleteNode.txt open FAIL\n");
+		return;
+	}
+	fprintf(fpStu, "%s\t%s\t%d\t%s\n", pstNode->idNumber, pstNode->name, pstNode->sex, pstNode->adminName);
+	fclose(fpStu);
+	return;
+}
 
 
 
