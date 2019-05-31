@@ -190,3 +190,25 @@ A: 作用域：是指变量在函数中可以作用的有效范围
 		第二步：取这个节点的下一个节点
 		第三步：如果下一个节点不为空，则在文件中写入一个换行符\n
 	}
+
+
+
+201905031 在stuSystemLinked.c中的问题
+1. void writeFile(struct PLHead * pstHead)  对文件的操作，返回值不能为void，要为int，如果文件打开失败，return -1; 在主函数中对这个函数的返回值进行判断，要判断文件是否正确打开。
+2. void writeNode(struct Student * pstNode, FILE * fpStu) 这个函数中，不要在函数外面打开文件，要与其它两个文件操作函数保持一致，这样做的好处是，第一，保持函数风格的一致性，第二，对文件的操作，在哪里打开的，就要在哪里关闭，你在主函数中打开，别人调用你的函数的时候，可能会忘记关闭，所以你直接在自己的函数中打开和关闭，就不会出现这种问题
+3. 对查询结果保存的问题，跟stuSystem.c中的 int searchStu(struct Student students[], int stuNum, struct Student resultStus[], int sex); 一样，用一个链表的头来传递所有的学生信息，用另一个链表来保存符合条件的学生信息
+	伪代码如下：
+	void searchBySex(struct PLHead * pstHead, struct PLHead * pstResultHead, int sex)
+	{
+		// 初始化 pstResultHead 链表，就是把里面的所有节点都清空
+		// 遍历 pstHead 这个链表
+		{
+			// 判断这个节点的信息是否符合查询条件
+			// 如果符合条件
+			{
+				// 把这个节点的信息拷贝到新的节点上，然后把这个节点放在 pstResultHead 里面
+			}
+				
+		}
+	}
+	调用这个函数之前，首先要在主函数中创建 pstResultHead ，跟创建 pstHead 一样，然后在这个函数里面，要对 pstResultHead 进行初始化，把里面的节点都清空，不然影响查询结果
