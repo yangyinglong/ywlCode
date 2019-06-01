@@ -133,20 +133,22 @@ void printHead()
 	printf("|IdNum\t|Name\t|Sex\t|Admin\t|\n");	
 }
 
-/**
-* 打印所有有效学生的信息（状态为1）
- */
+/*
+ *打印所有有效学生的信息（状态为1）
+**/
 void printAll(struct Student students[], int stuNum)    //void类型的函数printAll中传入了struct Student类型的students和int类型的stuNum这两个参数
 {
 	printHead();
 	struct Student * pStu;       //定义一个struct Student类型的指针pStu
+	
 	if (stuNum == 0)
 	{
 		for (int j = 0; j < 33; ++j)
 		{
 			printf("-");			
 		}
-		printf("\n|	   no this student !  	 |\n");
+		printf("\n|	   no this student !   |\n");
+		return;
 	}
 	for (int i = 0; i < stuNum; ++i)
 	{
@@ -297,7 +299,7 @@ void writeStu(struct Student * pStu, FILE * fp)
 		printf("FILE deleteStu.txt open FAIL\n");
 		return;
 	}
-	fprintf(fp, "\n%s\t%s\t%d\t%d\t%s", pStu->idNumber, pStu->name, pStu->sex, pStu->status, pStu->adminName);
+	fprintf(fp, "%s\t%s\t%d\t%d\t%s\n", pStu->idNumber, pStu->name, pStu->sex, pStu->status, pStu->adminName);
 	fclose(fp);
 	return;
 }
@@ -318,7 +320,7 @@ int addStu(struct Student students[], int stuNum, struct Student stu)
 		pStu = &students[i];
 		if(strcmp(stu.idNumber, students[i].idNumber) == 0 && pStu->status == 1)
 		{
-			printf("student already exist!\n");
+			printf("The student already exist!\n");
 			return stuNum;
 		}
 	}
@@ -429,3 +431,5 @@ int searchStuById(struct Student students[], int stuNum, char idNumber[], struct
 
 	return index;
 }
+
+

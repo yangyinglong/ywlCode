@@ -53,12 +53,14 @@ int RemoveStudent(struct PLHead * pstHead, struct Student * pstNewNode);
 int DestoryNode(struct Student * pstNode);
 struct Student *SearchNodeById(struct PLHead *pstHead, char *idNumber);
 int readFile(struct PLHead * pstHead);
-void writeFile(struct PLHead * pstHead) ;
-void writeNode(struct Student * pstNode, FILE * fpStu);
+int writeFile(struct PLHead * pstHead) ;
+int writeNode(struct Student * pstNode, FILE * fpStu);
+int searchBySex(struct PLHead * pstHead, struct PLHead * pstResultHead, int sex);
 
 int main(int argc, char const *argv[])
 {
 	struct PLHead *pstHead = CreatePLHead();   //创建一个数据链表
+	struct PLHead *pstResultHead = CreatePLHead();
 	struct Student *pstNew = NULL;        //pstNew 作为新节点，用来存储新插入的节点
 	struct Student *pstTemp = NULL;   
 	struct Student NodeData = {""};          //定义一个节点的变量， //在新插入节点的时候用来存储新节点的内容
@@ -99,9 +101,9 @@ int main(int argc, char const *argv[])
 				scanf("%d", &NodeData.sex);
 				while(getchar() != '\n');
 				pstNew = CreateNewNode(&NodeData);  
-				Judge(pstHead, pstNew); 
-				judge = Judge(pstHead, pstNew);
-				if(1 == judge)
+				// Judge(pstHead, pstNew);       //这边有点累赘，写完再改
+				// judge = Judge(pstHead, pstNew);
+				if(Judge(pstHead, pstNew) == 1)
 				{
 					InsertStudentAtTail(pstHead, pstNew);
 				}
@@ -136,11 +138,19 @@ int main(int argc, char const *argv[])
 					}
 				}
 				break;
-			// case 'f':       //根据性别查询符合条件的所有学生的信息并打印出来
-			// 	printf("please input a sex(0 or 1) endwith enter: ");
-			// 	scanf("%d", &sex);
-			// 	while(getchar() != '\n');
-				
+			case 'f':       //根据性别查询符合条件的所有学生的信息并打印出来
+				printf("please input a sex(0 or 1) endwith enter: ");
+				scanf("%d", &sex);
+				while(getchar() != '\n');
+				if(-1 == searchBySex(pstHead, pstResultHead, sex))
+				{
+					return -1;
+				}
+				else
+				{
+					PrintAllNode(pstResultHead);
+				}
+				break;
 			case 's':
 				printf("please input an idNumber endwith enter: ");
 				inputCharArr(idNumber, 6);
@@ -551,9 +561,32 @@ int writeNode(struct Student * pstNode, FILE * fpStu)
 	return 0;
 }
 
-
-
-
+//根据性别输入查找学生并打印
+int searchBySex(struct PLHead * pstHead, struct PLHead * pstResultHead, int sex)
+{
+	// struct PLHead *pstResultHead = CreatePLHead();
+	// pstResultHead -> pstFirst = NULL;
+	DestoryPLHead(pstResultHead);
+	struct Student *pstNode = NULL;
+	struct Student *pstSex = NULL;
+	if(NULL == pstHead)        //先判断参数是否正确
+	{
+		return -1;
+	}
+	pstNode = pstHead -> pstFirst;
+	// pstSex = pstResultHead -> pstFirst;
+	while(pstNode != NULL)
+	{
+		if(pstNode -> sex == sex) 
+		{
+			// pstSex = pstNode;
+			pstSex = CreateNewNode(pstNode);
+			InsertStudentAtTail(pstResultHead, pstSex);
+		}
+		pstNode = pstNode -> pstNext;
+	}
+	return 0;
+}
 
 
 /*
