@@ -26,16 +26,17 @@ void searchMune();
 void printHead();
 void printOne(struct Staff * pRSta);
 void printAll(struct Staff staffs[], int staNum);    //打印所有员工信息(包括状态stastas==0的员工)
-int searchAll(struct Staff staffs[], int staNum, char idNumber[], char name[], char degree[], char position[], int income, struct Staff * pRSta);
+int searchAll(struct Staff staffs[], int staNum, char idNumber[], char name[], char degree[], char position[], int income, struct Staff * pRSta, struct Staff resultStas[]);
 int readFile(struct Staff staffs[]);       //读取文件
 void writeFile(struct Staff staffs[], int staNum);   //写入文件（将文件中修改后的内容写入文件）
 void writeSta(struct Staff * pSta, FILE * fp);
 int addSta(struct Staff staffs[], int staNum, struct Staff sta);        //增加一条员工记录
 void deleteSta(struct Staff staffs[], char idNumber[], int staNum);       //删除一条员工记录(使该员工的状态stastas==0)
 int searchStaById(struct Staff staffs[], int staNum, char idNumber[], struct Staff * pRSta);
-// int searchStaByName(struct Staff staffs[], int staNum, char name[], struct Staff * pRSta);
-// int searchStaByDegree(struct Staff staffs[], int staNum, char degree[], struct Staff * pRSta);
-// int searchStaByPosition(struct Staff staffs[], int staNum, char position[], struct Staff * pRSta);
+int searchStaByName(struct Staff staffs[], int staNum, char name[], struct Staff * pRSta);
+int searchStaByDegree(struct Staff staffs[], int staNum, char degree[], struct Staff * pRSta);
+int searchStaByPosition(struct Staff staffs[], int staNum, char position[], struct Staff * pRSta);
+int searchStaByIncome(struct Staff staffs[], int staNum, struct Staff resultStus[], int income);
 void inputCharArr(char charArr[], int len);
 struct Staff initSta(char idNumber[], char name[], char degree[], char position[], int income, char phoneNum[]);
 void reviseSta(struct Staff staffs[], int staNum, char idNumber[], char name[], char degree[], char position[], int income, char phoneNum[], struct Staff * pRSta);
@@ -57,6 +58,7 @@ int main()
 	int resultNum;    //定义员工数量，存放符合条件的员工数量
 	struct Staff sta;      //struct Stadent(员工结构体)类型的变量sta
 	// char mark;
+	struct Staff * pRSta;
 	staNum = readFile(staffs); 	//从文件中读取员工数量
 	mune();
 	while(sign == 1) 
@@ -83,9 +85,10 @@ int main()
 				sta = initSta(idNumber, name, degree, position, income, phoneNum);
 				staNum = addSta(staffs, staNum, sta);   	
 				break; 
-			case 'r':
-				reviseSta(staffs, staNum, idNumber, name, degree, position, income, phoneNum, &sta);
-
+			// case 'r':
+			// 	// reviseSta(staffs, staNum, idNumber, name, degree, position, income, phoneNum, &sta);
+			// 	resultNum = searchStaByIncome(staffs, staNum, resultStas, income);
+			// 	printAll(resultStas, resultNum);
 
 			// 	printf("please input an idNumber endwith enter: ");
 			// 	inputCharArr(idNumber, 6);
@@ -111,21 +114,22 @@ int main()
 				printf("please input an idNumber endwith enter: ");
 				inputCharArr(idNumber, 6);
 				deleteSta(staffs, idNumber, staNum);    
-				break;        
-			// case 'f':       //根据工资查询符合条件的所有员工的信息并打印出来
-			// 	printf("please input a income endwith enter: ");
-			// 	// scanf("%s",&makf);
-			// 	scanf("%d", &income);
-			// 	while(getchar() != '\n');
-			// 	resultNum = searchStaByIc(staffs, staNum, resultStas, income);
-			// 	printAll(resultStas, resultNum);
-			// 	break;  
+				break;         
 			case 's':
 				searchMune();
-				resultNum = searchAll(staffs, staNum, idNumber, name, degree, position, income, &sta);
-				if (1 == resultNum)   
+				resultNum = searchAll(staffs, staNum, idNumber, name, degree, position, income, &sta, resultStas);
+				if(resultNum == 1)
 				{
 					printOne(&sta);
+				}
+				else if(resultNum == 1)
+				{
+					printHead();
+					printf("|	  no this staff !  	 |\n");
+				}
+				else
+				{
+					printAll(resultStas, resultNum);
 				}			
 				break; 
 			case 'p':       //打印所有员工信息
@@ -168,10 +172,10 @@ void searchMune()
 {
 	printf("***************************************\n");
 	printf("****please chose the way you search****\n");
-	printf("    1 -- byIdNumber    4 -- byPosition\n ");
-	printf("    2 -- byName        5 -- byIncome  \n ");
-	printf("    3 -- byDegree      6 -- clean     \n ");
-	printf("    0 -- exit                         \n ");
+	printf("   1 -- byIdNumber    4 -- byPosition  \n");
+	printf("   2 -- byName        5 -- byIncome    \n");
+	printf("   3 -- byDegree      6 -- clean       \n");
+	printf("   0 -- exit                           \n");
 	printf("***************************************\n");
 }
 
@@ -332,7 +336,6 @@ void writeSta(struct Staff * pSta, FILE * fp)
 	return;
 }
 
-
 //增加一个员工
 int addSta(struct Staff staffs[], int staNum, struct Staff sta)
 {
@@ -415,87 +418,34 @@ struct Staff initSta(char idNumber[], char name[], char degree[], char position[
 };
 
 //查询(通过编号、姓名、学历、职位、工资)
-int searchAll(struct Staff staffs[], int staNum, char idNumber[], char name[], char degree[], char position[], int income, struct Staff * pRSta)
+int searchAll(struct Staff staffs[], int staNum, char idNumber[], char name[], char degree[], char position[], int income, struct Staff * pRSta, struct Staff resultStas[])
 {
-	struct Staff * pSta;
 	int index = 0;
 	int choose;
-	char mark;
-	struct Staff sta;
 	printf("please enter you search way: ");
 	scanf("%d", &choose);
 	while(getchar() != '\n');
-	for(int i = 0; i < staNum; ++i)
+	if(choose == 1)
 	{
-		pSta = &staffs[i];
-		if(choose == 1)
-		{
-			index = searchStaById(staffs, staNum, idNumber, &sta);	
-		}
-		else if(choose == 2)
-		{
-			printf("please input a name endwith enter: ");
-			inputCharArr(name, 20);
-			while(getchar() != '\n');
-			if(strcmp(name, staffs[i].name) == 0 && staffs[i].status == 1)
-			{
-				index = 1;
-			}
-		}
-		else if(choose == 3)
-		{
-			printf("please input a degree endwith enter: ");
-			inputCharArr(degree, 20);
-			while(getchar() != '\n');
-			if(strcmp(degree, staffs[i].degree) == 0 && staffs[i].status == 1)
-			{
-				index = 1;
-			}
-		}
-		else if(choose == 4)
-		{
-			printf("please input a position endwith enter: ");
-			inputCharArr(position, 20);
-			while(getchar() != '\n');
-			if(strcmp(position, staffs[i].position) == 0 && staffs[i].status == 1)
-			{
-				index = 1;
-			}
-		}
-		else             //按工资查询段查询（不正确）
-		{
-			// printf("please input a mark endwith enter: ");
-			// scanf("%c", &mark);
-			printf("please input a income endwith enter: ");
-			scanf("%d", &income);
-			// if(mark == '>')
-			// {
-				if(pSta->income == income)
-				{
-					index = 1;
-				}
-			// }	
-		}
+		index = searchStaById(staffs, staNum, idNumber, pRSta);	
 	}
-	if(index == 1)
+	else if(choose == 2)
 	{
-	//	*pRSta = staffs[i];  //将符合条件的值赋给指针PRSta，方法一：直接赋值
-		strcpy(pRSta->idNumber, pSta->idNumber);            //方法二：改进方法
-		strcpy(pRSta->name, pSta->name);
-		strcpy(pRSta->degree, pSta->degree);
-		strcpy(pRSta->position, pSta->position);
-		strcpy(pRSta->phoneNum, pSta->phoneNum);
-		pRSta->income = pSta->income;
-		pRSta->status = pSta->status;
-	}  
-	else
-	{
-		printHead();
-		printf("|	  no this staff !  	 |\n");
+		index = searchStaByName(staffs, staNum, name, pRSta);
 	}
-
-	return index; 
-
+	else if(choose == 3)
+	{
+		index = searchStaByDegree(staffs, staNum, degree, pRSta);
+	}
+	else if(choose == 4)
+	{
+		index = searchStaByPosition(staffs, staNum, position, pRSta);
+	}
+	else if(choose == 5)            //按工资查询段查询（不正确）
+	{
+		index = searchStaByIncome(staffs, staNum, resultStas, income);
+	}
+		return index; 
 }
 
 //按编号查询员工信息
@@ -523,6 +473,139 @@ int searchStaById(struct Staff staffs[], int staNum, char idNumber[], struct Sta
 			break;
 		}   
 	}
+	return index;
+}
+
+//按姓名查找员工信息
+int searchStaByName(struct Staff staffs[], int staNum, char name[], struct Staff * pRSta)
+{
+	struct Staff * pSta;
+	int index = 0;
+	printf("please input a name endwith enter: ");
+	inputCharArr(name, 20);
+	while(getchar() != '\n');
+	for(int i = 0; i < staNum; ++i)
+	{
+		pSta = &staffs[i];
+		if(strcmp(name, staffs[i].name) == 0 && staffs[i].status == 1)
+		{
+			strcpy(pRSta->idNumber, pSta->idNumber);
+			strcpy(pRSta->name, pSta->name);
+			strcpy(pRSta->degree, pSta->degree);
+			strcpy(pRSta->position, pSta->position);
+			strcpy(pRSta->phoneNum, pSta->phoneNum);
+			pRSta->income = pSta->income;
+			pRSta->status = pSta->status;
+			index = 1; 
+			break;
+		}   
+	}
+	return index;
+}
+
+//按学历查找员工信息
+int searchStaByDegree(struct Staff staffs[], int staNum, char degree[], struct Staff * pRSta)
+{
+	struct Staff * pSta;
+	int index = 0;
+	printf("please input a degree endwith enter: ");
+	inputCharArr(degree, 20);
+	while(getchar() != '\n');
+	for(int i = 0; i < staNum; ++i)
+	{
+		pSta = &staffs[i];
+		if(strcmp(degree, staffs[i].degree) == 0 && staffs[i].status == 1)
+		{            
+			strcpy(pRSta->idNumber, pSta->idNumber);
+			strcpy(pRSta->name, pSta->name);
+			strcpy(pRSta->degree, pSta->degree);
+			strcpy(pRSta->position, pSta->position);
+			strcpy(pRSta->phoneNum, pSta->phoneNum);
+			pRSta->income = pSta->income;
+			pRSta->status = pSta->status;
+			index = 1; 
+			break;
+		}   
+	}
+	return index;
+}
+
+//按职位查找员工信息
+int searchStaByPosition(struct Staff staffs[], int staNum, char position[], struct Staff * pRSta)
+{
+	struct Staff * pSta;
+	int index = 0;
+	printf("please input a position endwith enter: ");
+	inputCharArr(position, 20);
+	while(getchar() != '\n');
+	for(int i = 0; i < staNum; ++i)
+	{
+		pSta = &staffs[i];
+		if(strcmp(position, staffs[i].position) == 0 && staffs[i].status == 1)
+		{
+			strcpy(pRSta->idNumber, pSta->idNumber);
+			strcpy(pRSta->name, pSta->name);
+			strcpy(pRSta->degree, pSta->degree);
+			strcpy(pRSta->position, pSta->position);
+			strcpy(pRSta->phoneNum, pSta->phoneNum);
+			pRSta->income = pSta->income;
+			pRSta->status = pSta->status;
+			index = 1; 
+			break;
+		}   
+	}
+	return index;
+}
+
+
+//按工资段查找
+int searchStaByIncome(struct Staff staffs[], int staNum, struct Staff resultStas[], int income)
+{
+	struct Staff * pSta;
+	int index = 0;
+	char mark;
+	printf("please input a income endwith enter: ");
+	scanf("%s", &mark);
+	scanf("%d", &income);
+	while(getchar() != '\n');
+	if(mark == '>')
+	{
+		for(int i = 0; i < staNum; ++i)
+		{
+			pSta = &staffs[i];
+			if(pSta->income > income && pSta->status == 1)
+			{
+				resultStas[index] = staffs[i];  
+				index ++;            
+			}
+		}
+	}
+	else if(mark == '<')
+	{
+		for(int i = 0; i < staNum; ++i)
+		{
+			pSta = &staffs[i];
+			if(pSta->income < income && pSta->status == 1)
+			{
+				resultStas[index] = staffs[i];  
+				index ++;            
+			}
+		}
+	}
+	else if(mark == '=')
+	{
+		for(int i = 0; i < staNum; ++i)
+		{
+			pSta = &staffs[i];
+			if(pSta->income == income && pSta->status == 1)
+			{
+				resultStas[index] = staffs[i];  
+				index ++;            
+			}
+		}
+	}	
+	printf("gongziduan: %c%d\n", mark, income);
+	printf("number    : %d\n", index);
 	return index;
 }
 
@@ -578,96 +661,7 @@ void reviseSta(struct Staff staffs[], int staNum, char idNumber[], char name[], 
 
 
 
-// //按姓名查找员工信息
-// int searchStaByName(struct Staff staffs[], int staNum, char name[], struct Staff * pRSta)
-// {
-// 	struct Staff * pSta;
-// 	int index = 0;
-// 	for(int i = 0; i < staNum; ++i)
-// 	{
-// 		pSta = &staffs[i];
-// 		if(strcmp(name, staffs[i].name) == 0 && staffs[i].status == 1)
-// 		{
-// 			strcpy(pRSta->idNumber, pSta->idNumber);
-// 			strcpy(pRSta->name, pSta->name);
-// 			strcpy(pRSta->degree, pSta->degree);
-// 			strcpy(pRSta->position, pSta->position);
-// 			strcpy(pRSta->phoneNum, pSta->phoneNum);
-// 			pRSta->income = pSta->income;
-// 			pRSta->status = pSta->status;
-// 			index = 1; 
-// 			break;
-// 		}   
-// 	}
-// 	return index;
-// }
 
-// //按学历查找员工信息
-// int searchStaByDegree(struct Staff staffs[], int staNum, char degree[], struct Staff * pRSta)
-// {
-// 	struct Staff * pSta;
-// 	int index = 0;
-// 	for(int i = 0; i < staNum; ++i)
-// 	{
-// 		pSta = &staffs[i];
-// 		if(strcmp(degree, staffs[i].degree) == 0 && staffs[i].status == 1)
-// 		{            
-// 			strcpy(pRSta->idNumber, pSta->idNumber);
-// 			strcpy(pRSta->name, pSta->name);
-// 			strcpy(pRSta->degree, pSta->degree);
-// 			strcpy(pRSta->position, pSta->position);
-// 			strcpy(pRSta->phoneNum, pSta->phoneNum);
-// 			pRSta->income = pSta->income;
-// 			pRSta->status = pSta->status;
-// 			index = 1; 
-// 			break;
-// 		}   
-// 	}
-// 	return index;
-// }
-
-// //按职位查找员工信息
-// int searchStaByPosition(struct Staff staffs[], int staNum, char position[], struct Staff * pRSta)
-// {
-// 	struct Staff * pSta;
-// 	int index = 0;
-// 	for(int i = 0; i < staNum; ++i)
-// 	{
-// 		pSta = &staffs[i];
-// 		if(strcmp(position, staffs[i].position) == 0 && staffs[i].status == 1)
-// 		{
-// 			strcpy(pRSta->idNumber, pSta->idNumber);
-// 			strcpy(pRSta->name, pSta->name);
-// 			strcpy(pRSta->degree, pSta->degree);
-// 			strcpy(pRSta->position, pSta->position);
-// 			strcpy(pRSta->phoneNum, pSta->phoneNum);
-// 			pRSta->income = pSta->income;
-// 			pRSta->status = pSta->status;
-// 			index = 1; 
-// 			break;
-// 		}   
-// 	}
-// 	return index;
-// }
-
-
-
-// // int searchStaByIncome(struct Staff staffs[], int stuNum, struct Staff resultStus[], int income)
-// // {
-// // 	struct Staff * pStu;
-// // 	int index = 0;
-// // 	for(int i = 0; i < stuNum; ++i)
-// // 	{
-// // 		pStu = &staffs[i];
-// // 		if(pStu->sex == sex && pStu->status == 1)
-// // 		{
-// // 			resultStus[index] = staffs[i];  
-// // 			index ++;            
-// // 		}
-// // 	}
-
-// // 	return index;
-// // }
 
 
 
