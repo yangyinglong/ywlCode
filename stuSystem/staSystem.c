@@ -25,7 +25,7 @@ FILE * fpSta;    //定义一个指向文件的指针fpSta
 void mune();
 void searchMune();
 void printHead();
-void printOne(struct Staff * pRSta);
+// void printOne(struct Staff * pRSta);
 void printAll(struct Staff staffs[], int staNum);    //打印所有员工信息(包括状态stastas==0的员工)
 int readFile(struct Staff staffs[]);       //读取文件
 void writeFile(struct Staff staffs[], int staNum);   //写入文件（将文件中修改后的内容写入文件）
@@ -40,7 +40,8 @@ int searchStaByPosition(struct Staff staffs[], int staNum, char position[], stru
 int searchStaByIncome(struct Staff staffs[], int staNum, struct Staff resultStus[], int income);
 void inputCharArr(char charArr[], int len);
 struct Staff initSta(char idNumber[], char name[], char degree[], char position[], int income, char phoneNum[]);
-void reviseSta(struct Staff staffs[], int staNum, char idNumber[], char name[], char degree[], char position[], int income, char phoneNum[], struct Staff * pRSta);
+void reviseSta(struct Staff staffs[], int staNum, char idNumber[], char name[], char degree[], char position[], int income, char phoneNum[], struct Staff resultStas[]);
+int PutIn(struct Staff staffs[], int staNum, char idNumber[], char name[], char degree[], char position[], int income, char phoneNum[], struct Staff resultStas[]);
 
 int main()
 {
@@ -56,9 +57,7 @@ int main()
 	int income;
 	char phoneNum[20];
 	int resultNum;    //定义员工数量，存放符合条件的员工数量
-	struct Staff sta;      //struct Staff(员工结构体)类型的变量sta
-	// char mark;
-	struct Staff * pRSta;
+	int len;
 	staNum = readFile(staffs); 	//从文件中读取员工数量
 
 	mune();
@@ -70,63 +69,31 @@ int main()
 		switch(order)
 		{
 			case 'a':       //增加一条记录
-				printf("please input an idNumber endwith enter: ");
-				inputCharArr(idNumber, 6);
-				printf("please input a name endwith enter: ");
-				inputCharArr(name, 20);
-				printf("please input a degree endwith enter: ");
-				inputCharArr(degree, 20);
-				printf("please input a position endwith enter: ");
-				inputCharArr(position, 20);
-				printf("please input a phoneNum endwith enter: ");
-				inputCharArr(phoneNum, 20);
-				printf("please input a income endwith enter: ");
-				scanf("%d", &income);
-				while(getchar() != '\n');          //用来在输入命令后清除缓冲
-				sta = initSta(idNumber, name, degree, position, income, phoneNum);
-				staNum = addSta(staffs, staNum, sta);   	
+				staNum = PutIn(staffs, staNum, idNumber, name, degree, position, income, phoneNum, resultStas); 	
 				break; 
 			case 'c':   //清屏
 				system("cls");
 				mune();
 				break;
-			// case 'r':
-			// 	// reviseSta(staffs, staNum, idNumber, name, degree, position, income, phoneNum, &sta);
-			// 	resultNum = searchStaByIncome(staffs, staNum, resultStas, income);
-			// 	printAll(resultStas, resultNum);
-
-			// 	printf("please input an idNumber endwith enter: ");
-			// 	inputCharArr(idNumber, 6);
-			// 	while(getchar() != '\n');
-			// 	resultNum = searchStaById(staffs, staNum, idNumber, &sta);
-			// 	printf("please input a name endwith enter: ");
-			// 	inputCharArr(name, 20);
-			// 	printf("please input a degree endwith enter: ");
-			// 	inputCharArr(degree, 20);
-			// 	printf("please input a position endwith enter: ");
-			// 	inputCharArr(position, 20);
-			// 	printf("please input a phoneNum endwith enter: ");
-			// 	inputCharArr(phoneNum, 20);
-			// 	printf("please input a income endwith enter: ");
-			// 	scanf("%d", &income);
-			// 	while(getchar() != '\n'); 
-			// 	idNumber = reviseAll(staffs, resultNum);
-			// 	sta = initSta(idNumber, name, degree, position, income, phoneNum);  
-			// 	staNum = addSta(staffs, staNum, sta);
-
+			case 'r':
+				reviseSta(staffs, staNum, idNumber, name, degree, position, income, phoneNum, resultStas);
 				break;  			
 			case 'd':       //根据编号删除一条记录(使该员工的状态stasta==0)
-				printf("please input an idNumber endwith enter: ");
-				inputCharArr(idNumber, 6);
 				deleteSta(staffs, idNumber, staNum);    
-				break;         
+				break; 
+			case 'g':
+				printf("please enter the number you want go throngh every time:");
+				scanf("%d", &len);
+				getchar();
+				printAll(staffs, len);
+				break;        
 			case 's':
 				searchMune();
 				resultNum = searchAll(staffs, staNum, idNumber, name, degree, position, income, resultStas);
 				if(resultNum == 0)
 				{
 					printHead();
-					printf("|	  no this staff !  	 |\n");
+					printf("|	        	  no this staff !           	 |\n");
 				}
 				else 
 				{
@@ -160,7 +127,7 @@ void mune()
 	printf("***          a -- add               ***\n");     //增加
 	printf("***          r -- revise            ***\n");     //修改-按编号查找然后修改编号以外的信息
 	printf("***          d -- delete            ***\n");     //删除-按员工编号
-	printf("***          s -- search            ***\n");     //按编号查询
+	printf("***          s -- search            ***\n");     //查询
 	printf("***          g -- gothrough         ***\n"); 	 //浏览员工信息
 	printf("***          c -- cleanScreem       ***\n"); 	 //清屏
 	printf("***          q -- exit              ***\n"); 	 //退出职工系统
@@ -170,6 +137,7 @@ void mune()
 //信息查询菜单
 void searchMune()
 {
+	printf("\n");
 	printf("***************************************\n");
 	printf("****please chose the way you search****\n");
 	printf("   1 -- byIdNumber    4 -- byPosition  \n");
@@ -177,17 +145,18 @@ void searchMune()
 	printf("   3 -- byDegree      6 -- clean       \n");
 	printf("   0 -- exit                           \n");
 	printf("***************************************\n");
+	printf("\n");
 }
 
 //打印头部
 void printHead()
 {
-	for (int i = 0; i < 50; ++i)
+	for (int i = 0; i < 58; ++i)
 	{
 		printf("-");
 	}
 	printf("\n");
-	printf("|IdNum\t|Name\t|Degree\t|Pos\t|income\t|Phone\t|\n");		
+	printf("|IdNum\t|Name\t|Degree\t|Pos\t|income\t|Phone  \t|\n");		
 }
 
 //打印所有有效员工的信息（状态为1）
@@ -198,11 +167,11 @@ void printAll(struct Staff staffs[], int staNum)    //void类型的函数printAl
 	
 	if (staNum == 0)
 	{
-		for (int j = 0; j < 50; ++j)
+		for (int j = 0; j < 58; ++j)
 		{
 			printf("-");			
 		}
-		printf("\n|	   no this staff !   |\n");
+		printf("\n|	        	  no this staff !           	 |\n");
 		return;
 	}
 	for (int i = 0; i < staNum; ++i)
@@ -212,7 +181,7 @@ void printAll(struct Staff staffs[], int staNum)    //void类型的函数printAl
 		{
 			continue;	 
 		}
-		for (int j = 0; j < 50; ++j)
+		for (int j = 0; j < 58; ++j)
 		{
 			printf("-");			
 		}
@@ -231,7 +200,7 @@ void printAll(struct Staff staffs[], int staNum)    //void类型的函数printAl
 		printf("|\n");
 
 	}
-	for (int j = 0; j < 50; ++j)
+	for (int j = 0; j < 58; ++j)
 	{
 		printf("-");			
 	}
@@ -241,33 +210,33 @@ void printAll(struct Staff staffs[], int staNum)    //void类型的函数printAl
 
 
 //打印一个员工的信息（在查询时用到）
-void printOne(struct Staff * pRSta)
-{
-	printHead();
-	for (int j = 0; j < 50; ++j)
-	{
-		printf("-");			
-	}
-	printf("\n|");
-	printf("%s\t", pRSta->idNumber);
-	printf("|");
-	printf("%s\t", pRSta->name);
-	printf("|");
-	printf("%s\t", pRSta->degree);
-	printf("|");
-	printf("%s\t", pRSta->position);
-	printf("|");
-	printf("%d\t", pRSta->income);
-	printf("|");
-	printf("%s\t", pRSta->phoneNum);
-	printf("|\n");
-	for (int j = 0; j < 50; ++j)
-	{
-		printf("-");			
-	}
-	printf("\n");
-	return;
-}
+// void printOne(struct Staff * pRSta)
+// {
+// 	printHead();
+// 	for (int j = 0; j < 58; ++j)
+// 	{
+// 		printf("-");			
+// 	}
+// 	printf("\n|");
+// 	printf("%s\t", pRSta->idNumber);
+// 	printf("|");
+// 	printf("%s\t", pRSta->name);
+// 	printf("|");
+// 	printf("%s\t", pRSta->degree);
+// 	printf("|");
+// 	printf("%s\t", pRSta->position);
+// 	printf("|");
+// 	printf("%d\t", pRSta->income);
+// 	printf("|");
+// 	printf("%s\t", pRSta->phoneNum);
+// 	printf("|\n");
+// 	for (int j = 0; j < 58; ++j)
+// 	{
+// 		printf("-");			
+// 	}
+// 	printf("\n");
+// 	return;
+// }
 
 //读取打开文件中的内容
 int readFile(struct Staff staffs[])
@@ -308,13 +277,13 @@ void writeFile(struct Staff staffs[], int staNum)
 			{
 				fprintf(fpSta,"\n");
 			}
-			fprintf(fpSta, "%s\t%s\t%s\t%s\t%d\t%s\t%d", staffs[i].idNumber, staffs[i].name, staffs[i].degree, staffs[i].position, staffs[i].income, staffs[i].phoneNum, staffs[i].status);
+			fprintf(fpSta, "%-6s%-10s%-10s%-10s%-8d%-13s%-2d", staffs[i].idNumber, staffs[i].name, staffs[i].degree, staffs[i].position, staffs[i].income, staffs[i].phoneNum, staffs[i].status);
 		}
 	}
 	if(staffs[staNum - 1].status == 1)
 		{
 			fprintf(fpSta,"\n");
-			fprintf(fpSta, "%s\t%s\t%s\t%s\t%d\t%s\t%d", staffs[staNum - 1].idNumber, staffs[staNum - 1].name, staffs[staNum - 1].degree, staffs[staNum - 1].position, staffs[staNum - 1].income, staffs[staNum - 1].phoneNum, staffs[staNum - 1].status);
+			fprintf(fpSta, "%-6s%-10s%-10s%-10s%-8d%-13s%-2d", staffs[staNum - 1].idNumber, staffs[staNum - 1].name, staffs[staNum - 1].degree, staffs[staNum - 1].position, staffs[staNum - 1].income, staffs[staNum - 1].phoneNum, staffs[staNum - 1].status);
 		}	
 	fclose(fpSta);
 	return;
@@ -368,6 +337,8 @@ int addSta(struct Staff staffs[], int staNum, struct Staff sta)
 void deleteSta(struct Staff staffs[], char idNumber[], int staNum)
 {
 	struct Staff * pSta;
+	printf("please input an idNumber endwith enter: ");
+	inputCharArr(idNumber, 6);
 	for(int i = 0; i < staNum; ++i)
 	{
 		pSta = &staffs[i];
@@ -380,7 +351,8 @@ void deleteSta(struct Staff staffs[], char idNumber[], int staNum)
 			return;
 		}
 	}
-	printf("no this staff\n");
+	printHead();
+	printf("|	        	  no this staff !           	 |\n");
 	return;
 }
 
@@ -460,6 +432,7 @@ int searchAll(struct Staff staffs[], int staNum, char idNumber[], char name[], c
 int searchStaById(struct Staff staffs[], int staNum, char idNumber[], struct Staff resultStas[])
 {
 	int index = 0;
+	int i = 0;
 	printf("please input an idNumber endwith enter: ");
 	inputCharArr(idNumber, 6);
 	while(getchar() != '\n');
@@ -471,7 +444,16 @@ int searchStaById(struct Staff staffs[], int staNum, char idNumber[], struct Sta
 			index ++;
 		}   
 	}
-	return index;
+	if(index != 0)
+	{
+		return i+1;
+	}
+	else
+	{
+		return 0;
+	}
+	// return index;
+	
 }
 
 //按姓名查找员工信息
@@ -580,16 +562,16 @@ int searchStaByIncome(struct Staff staffs[], int staNum, struct Staff resultStas
 }
 
 //按编号查询并修改除编号以外的信息
-void reviseSta(struct Staff staffs[], int staNum, char idNumber[], char name[], char degree[], char position[], int income, char phoneNum[], struct Staff * pRSta)
+void reviseSta(struct Staff staffs[], int staNum, char idNumber[], char name[], char degree[], char position[], int income, char phoneNum[], struct Staff resultStas[])
 {
-	int resultNum;
+	int resultNum = 0;
 	// struct Staff * pSta;
 	struct Staff sta;
 	// pSta = &staffs[i];
 	printf("please enter an idNumber you want to revise: ");
 	inputCharArr(idNumber, 6);
-	resultNum = searchStaById(staffs, staNum, idNumber, &sta);
-	if(resultNum == 1)
+	resultNum = searchStaById(staffs, staNum, idNumber, resultStas);
+	if(resultNum != 0)
 	{
 		printf("please input a name endwith enter: ");
 		inputCharArr(name, 20);
@@ -604,7 +586,7 @@ void reviseSta(struct Staff staffs[], int staNum, char idNumber[], char name[], 
 		while(getchar() != '\n');          //用来在输入命令后清除缓冲
 		sta = initSta(idNumber, name, degree, position, income, phoneNum);
 		// staNum = addSta(staffs, staNum, sta);
-		staffs[staNum] = sta;
+		staffs[resultNum-1] = sta;
 		fpSta = fopen("staff.txt", "a+");
 		writeSta(&sta, fpSta);	
 	}
@@ -613,21 +595,31 @@ void reviseSta(struct Staff staffs[], int staNum, char idNumber[], char name[], 
 
 
 //将员工信息的录入进行改进
-// void putIn(char idNumber[], char name[], char degree[], char position[], int income, char phoneNum[])
-// {
-// 	printf("please input an idNumber endwith enter: ");
-// 	inputCharArr(idNumber, 6);
-// 	printf("please input a name endwith enter: ");
-// 	inputCharArr(name, 20);
-// 	printf("please input a degree endwith enter: ");
-// 	inputCharArr(degree, 20);
-// 	printf("please input a position endwith enter: ");
-// 	inputCharArr(position, 20);
-// 	printf("please input a phoneNum endwith enter: ");
-// 	inputCharArr(phoneNum, 20);
-// 	printf("please input a income endwith enter: ");
-// 	scanf("%d", &income);
-// }
+int PutIn(struct Staff staffs[], int staNum, char idNumber[], char name[], char degree[], char position[], int income, char phoneNum[], struct Staff resultStas[])
+{
+	int resultNum = 0;
+	struct Staff sta;
+	printf("please enter an idNumber endwith enter: ");
+	inputCharArr(idNumber, 6);
+	resultNum = searchStaById(staffs, staNum, idNumber, resultStas);
+	if(resultNum == 0)
+	{
+		printf("please input a name endwith enter: ");
+		inputCharArr(name, 20);
+		printf("please input a degree endwith enter: ");
+		inputCharArr(degree, 20);
+		printf("please input a position endwith enter: ");
+		inputCharArr(position, 20);
+		printf("please input a phoneNum endwith enter: ");
+		inputCharArr(phoneNum, 20);
+		printf("please input a income endwith enter: ");
+		scanf("%d", &income);
+		while(getchar() != '\n');          //用来在输入命令后清除缓冲
+		sta = initSta(idNumber, name, degree, position, income, phoneNum);
+		staNum = addSta(staffs, staNum, sta);
+	}
+	return staNum;
+}
 
 
 
